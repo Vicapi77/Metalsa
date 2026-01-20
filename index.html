@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Metalsa V5 - Firebase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .nav-active { background-color: #1e40af; border-left: 4px solid #60a5fa; }
+        .view-section { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Loading Spinner */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex">
+
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10">
+        <div class="p-6 text-center border-b border-gray-700">
+            <h1 class="text-2xl font-bold tracking-wider">METALSA</h1>
+            <p class="text-xs text-gray-400 mt-1">Cloud Dashboard V5</p>
+        </div>
+
+        <div class="p-4 bg-slate-800 border-b border-gray-700">
+            <label class="text-xs text-gray-400 uppercase font-bold mb-1 block"><i class="fas fa-filter"></i> Filtro Global</label>
+            <select id="globalWeekSelector" class="w-full bg-slate-700 text-white p-2 rounded text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="all">Todas las Semanas</option>
+                <option value="W1">Semana 1 (Ene)</option>
+                <option value="W2">Semana 2 (Ene)</option>
+                <option value="W3" selected>Semana 3 (Ene)</option>
+                <option value="W4">Semana 4 (Ene)</option>
+            </select>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="navigate('view-general')" id="btn-general" class="w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3 nav-item nav-active">
+                <i class="fas fa-tachometer-alt w-6"></i> Dashboard Diario
+            </button>
+            <button onclick="navigate('view-seguridad')" id="btn-seguridad" class="w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3 nav-item">
+                <i class="fas fa-shield-alt w-6"></i> Seguridad
+            </button>
+            <button onclick="navigate('view-flota')" id="btn-flota" class="w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3 nav-item">
+                <i class="fas fa-truck w-6"></i> Flota & Mant.
+            </button>
+            <button onclick="navigate('view-operadores')" id="btn-operadores" class="w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3 nav-item">
+                <i class="fas fa-id-card w-6"></i> Operadores
+            </button>
+        </nav>
+        <div class="p-4 text-xs text-center text-gray-500">
+            Conectado a Firebase
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto bg-gray-100 p-8 relative">
+        <div id="loadingIndicator" class="hidden absolute top-4 right-4 bg-white p-2 rounded shadow flex items-center gap-2 z-50">
+            <div class="loader"></div> <span class="text-xs font-bold text-gray-600">Sincronizando...</span>
+        </div>
+
+        <section id="view-general" class="view-section">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Operación Diaria</h2>
+                    <p class="text-gray-500">Indicadores clave de rendimiento</p>
+                </div>
+                <button onclick="openModal('modalGeneral')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Cargar Operación
+                </button>
+            </header>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2">Calidad de Ruta (%)</h3>
+                    <div class="h-48"><canvas id="chartRouteQuality"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2">Nivel de Servicio (%)</h3>
+                    <div class="h-48"><canvas id="chartServiceLevel"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2">Inicios Tarde (Cantidad)</h3>
+                    <div class="h-48"><canvas id="chartLateStarts"></canvas></div>
+                </div>
+                 <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2">Accidentes (Cantidad)</h3>
+                    <div class="h-48"><canvas id="chartAccidents"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-seguridad" class="view-section hidden">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Seguridad Industrial</h2>
+                    <p class="text-gray-500">Fatiga y Siniestralidad</p>
+                </div>
+                <button onclick="openModal('modalSecurity')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow flex items-center gap-2">
+                    <i class="fas fa-plus"></i> Cargar Seguridad
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card col-span-1 md:col-span-2">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">Score Seguridad (%)</h3>
+                    <div class="h-48"><canvas id="chartSafetyScore"></canvas></div>
+                </div>
+                <div class="card col-span-1 md:col-span-2">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">Percances / Siniestralidad (%)</h3>
+                    <div class="h-48"><canvas id="chartIncidentsPct"></canvas></div>
+                </div>
+                <div class="card col-span-1 md:col-span-2 lg:col-span-2">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">Horas Trabajadas</h3>
+                    <div class="h-48"><canvas id="chartWorkHours"></canvas></div>
+                </div>
+                <div class="card col-span-1 md:col-span-2 lg:col-span-2">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">Horas Descansadas</h3>
+                    <div class="h-48"><canvas id="chartRestHours"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-flota" class="view-section hidden">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Control de Flota</h2>
+                    <p class="text-gray-500">Estado Mecánico y Mantenimientos</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openModal('modalFleetStatus')" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 text-sm">
+                        <i class="fas fa-chart-pie"></i> Actualizar Gráficas
+                    </button>
+                    <button onclick="openModal('modalFleetUnit')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow flex items-center gap-2 text-sm">
+                        <i class="fas fa-wrench"></i> Nueva Unidad
+                    </button>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-gray-700 mb-2">Disponibilidad Mecanix (%)</h3>
+                    <div class="h-48 w-48 relative">
+                        <canvas id="gaugeMecanix"></canvas>
+                        <div id="textMecanix" class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700">0%</div>
+                    </div>
+                </div>
+                 <div class="card flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-gray-700 mb-2">Funcionamiento Climas (%)</h3>
+                    <div class="h-48 w-48 relative">
+                        <canvas id="gaugeClima"></canvas>
+                        <div id="textClima" class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-gray-700">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card overflow-x-auto">
+                <h3 class="font-bold text-gray-700 mb-4 border-b pb-2">Plan de Mantenimiento Preventivo</h3>
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3">No. Unidad</th>
+                            <th class="px-6 py-3">Modelo</th>
+                            <th class="px-6 py-3">Próximo Preventivo</th>
+                            <th class="px-6 py-3">Estatus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleetTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="view-operadores" class="view-section hidden">
+            <header class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Gestión de Operadores</h2>
+                    <p class="text-gray-500">Pruebas e Incidencias</p>
+                </div>
+                <button onclick="openModal('modalOperators')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow flex items-center gap-2">
+                    <i class="fas fa-user-check"></i> Cargar Indicadores
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase">Alcoholemias Realizadas</h3>
+                    <div class="h-40"><canvas id="chartOpsAlcohol"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase">Doping Realizados</h3>
+                    <div class="h-40"><canvas id="chartOpsDoping"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase">Cumplimiento Imagen %</h3>
+                    <div class="h-40"><canvas id="chartOpsImage"></canvas></div>
+                </div>
+            </div>
+
+            <div class="card bg-gray-50 border border-gray-200">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="font-bold text-lg text-gray-800"><i class="fas fa-exclamation-circle text-red-500"></i> Bitácora de Incidencias</h3>
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <input type="date" id="incDate" class="border p-2 rounded text-sm">
+                    <input type="text" id="incOp" placeholder="Operador / Unidad" class="border p-2 rounded text-sm flex-1">
+                    <input type="text" id="incDesc" placeholder="Descripción..." class="border p-2 rounded text-sm flex-[2]">
+                    <button onclick="addIncident()" class="bg-red-500 text-white px-4 rounded hover:bg-red-600 font-bold">Agregar</button>
+                </div>
+                <ul id="incidentList" class="space-y-2 max-h-60 overflow-y-auto pr-2"></ul>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modalGeneral" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold text-xl mb-4 text-blue-800">Cargar Dashboard</h3>
+            <label class="block text-xs font-bold">Semana (Ej: W3)</label>
+            <input type="text" id="genWeek" class="w-full border p-2 mb-2 rounded bg-yellow-50" placeholder="W3">
+            <label class="block text-xs font-bold">Fecha</label>
+            <input type="date" id="genDate" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Calidad de Ruta (%)</label>
+            <input type="number" id="genQuality" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Nivel de Servicio (%)</label>
+            <input type="number" id="genService" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Inicios Tarde (Cant)</label>
+            <input type="number" id="genLate" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Accidentes (Cant)</label>
+            <input type="number" id="genAccidents" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModals()" class="text-gray-500">Cancelar</button>
+                <button onclick="saveGeneral()" class="bg-blue-600 text-white px-4 py-2 rounded">Guardar en Cloud</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalSecurity" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold text-xl mb-4 text-indigo-800">Cargar Seguridad</h3>
+            <label class="block text-xs font-bold">Semana (Ej: W3)</label>
+            <input type="text" id="secWeek" class="w-full border p-2 mb-2 rounded bg-yellow-50" placeholder="W3">
+            <input type="date" id="secDate" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Score Seguridad (%)</label>
+            <input type="number" id="secScore" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Percances (%)</label>
+            <input type="number" id="secIncidents" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Horas Trabajadas</label>
+            <input type="number" id="secWork" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Horas Descansadas</label>
+            <input type="number" id="secRest" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModals()" class="text-gray-500">Cancelar</button>
+                <button onclick="saveSecurity()" class="bg-indigo-600 text-white px-4 py-2 rounded">Guardar en Cloud</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalFleetStatus" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold text-xl mb-4 text-teal-800">Actualizar Estatus Flota</h3>
+            <label class="block text-xs font-bold">Mecanix (%)</label>
+            <input type="number" id="fleetMecanixPct" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Climas (%)</label>
+            <input type="number" id="fleetClimaPct" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModals()" class="text-gray-500">Cancelar</button>
+                <button onclick="saveFleetStatus()" class="bg-teal-600 text-white px-4 py-2 rounded">Actualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalFleetUnit" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold text-xl mb-4 text-green-800">Nueva Unidad</h3>
+            <label class="block text-xs font-bold">No. Unidad</label>
+            <input type="text" id="fleetUnit" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Modelo</label>
+            <input type="text" id="fleetModel" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Próximo Preventivo</label>
+            <input type="date" id="fleetDate" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModals()" class="text-gray-500">Cancelar</button>
+                <button onclick="saveFleetUnit()" class="bg-green-600 text-white px-4 py-2 rounded">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalOperators" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h3 class="font-bold text-xl mb-4 text-purple-800">Indicadores Ops</h3>
+            <label class="block text-xs font-bold">Semana (Ej: W3)</label>
+            <input type="text" id="opsWeek" class="w-full border p-2 mb-2 rounded bg-yellow-50" placeholder="W3">
+            <input type="date" id="opsDate" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Alcoholemias (Cant)</label>
+            <input type="number" id="opsAlcohol" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Doping (Cant)</label>
+            <input type="number" id="opsDoping" class="w-full border p-2 mb-2 rounded">
+            <label class="block text-xs font-bold">Imagen OK (%)</label>
+            <input type="number" id="opsImage" class="w-full border p-2 mb-4 rounded">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModals()" class="text-gray-500">Cancelar</button>
+                <button onclick="saveOperators()" class="bg-purple-600 text-white px-4 py-2 rounded">Guardar en Cloud</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // 1. IMPORT FIREBASE
+        import { initializeApp } from "firebase/app";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+
+        // 2. CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4MkIp5TNPxlqg49t1iy8BzS-mdM8l2rE",
+            authDomain: "dash-metalsa.firebaseapp.com",
+            projectId: "dash-metalsa",
+            storageBucket: "dash-metalsa.firebasestorage.app",
+            messagingSenderId: "473472756804",
+            appId: "1:473472756804:web:fd31d3fd6ca084f9f0a011",
+            measurementId: "G-XMBTCRYQFB"
+        };
+
+        // 3. INIT
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        console.log("Firebase conectado");
+
+        // --- FUNCIONES HELPERS PARA UI ---
+        const showLoading = () => document.getElementById('loadingIndicator').classList.remove('hidden');
+        const hideLoading = () => document.getElementById('loadingIndicator').classList.add('hidden');
+        
+        // --- LEER DATOS (READ) ---
+        
+        // Función global para leer Dashboard, Seguridad y Ops filtrado por semana
+        async function fetchAllData() {
+            showLoading();
+            const selectedWeek = document.getElementById('globalWeekSelector').value;
+            console.log("Cargando datos para semana:", selectedWeek);
+
+            try {
+                // 1. Cargar General
+                let qGen;
+                if(selectedWeek === 'all') qGen = query(collection(db, "general_logs"), orderBy("date"));
+                else qGen = query(collection(db, "general_logs"), where("week", "==", selectedWeek), orderBy("date"));
+                
+                const snapGen = await getDocs(qGen);
+                const generalData = snapGen.docs.map(doc => doc.data());
+                updateGeneralCharts(generalData);
+
+                // 2. Cargar Seguridad
+                let qSec;
+                if(selectedWeek === 'all') qSec = query(collection(db, "security_logs"), orderBy("date"));
+                else qSec = query(collection(db, "security_logs"), where("week", "==", selectedWeek), orderBy("date"));
+
+                const snapSec = await getDocs(qSec);
+                const securityData = snapSec.docs.map(doc => doc.data());
+                updateSecurityCharts(securityData);
+
+                // 3. Cargar Operadores
+                let qOps;
+                if(selectedWeek === 'all') qOps = query(collection(db, "operator_logs"), orderBy("date"));
+                else qOps = query(collection(db, "operator_logs"), where("week", "==", selectedWeek), orderBy("date"));
+
+                const snapOps = await getDocs(qOps);
+                const opsData = snapOps.docs.map(doc => doc.data());
+                updateOperatorsCharts(opsData);
+
+            } catch (error) {
+                console.error("Error leyendo datos:", error);
+                alert("Error de conexión a Firebase. Revisa la consola.");
+            }
+            hideLoading();
+        }
+
+        // Cargar Flota (Independiente de la semana, se quiere el estado actual)
+        async function fetchFleetData() {
+            // Status (Gauges) - Obtener el ultimo registro
+            const qStatus = query(collection(db, "fleet_status"), orderBy("timestamp", "desc"), limit(1));
+            const snapStatus = await getDocs(qStatus);
+            if(!snapStatus.empty) {
+                const status = snapStatus.docs[0].data();
+                updateFleetGauges(status.mecanix, status.clima);
+            }
+
+            // Unidades (Tabla)
+            const snapUnits = await getDocs(collection(db, "fleet_units"));
+            const units = snapUnits.docs.map(doc => doc.data());
+            renderFleetTable(units);
+        }
+
+        // Cargar Incidencias
+        async function fetchIncidents() {
+            const q = query(collection(db, "incidents"), orderBy("date", "desc"), limit(20));
+            const snap = await getDocs(q);
+            const list = document.getElementById('incidentList');
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `<li class="bg-white p-2 rounded shadow border-l-4 border-red-500 text-sm">
+                    <span class="font-bold text-gray-500 text-xs">${d.date}</span> <br>
+                    <span class="font-bold">${d.operator}</span>: ${d.description}
+                </li>`;
+            });
+        }
+
+
+        // --- GUARDAR DATOS (WRITE) ---
+        // Exponemos las funciones al objeto window para que el HTML onclick las vea
+        
+        window.saveGeneral = async function() {
+            showLoading();
+            try {
+                await addDoc(collection(db, "general_logs"), {
+                    week: document.getElementById('genWeek').value,
+                    date: document.getElementById('genDate').value,
+                    quality: Number(document.getElementById('genQuality').value),
+                    service: Number(document.getElementById('genService').value),
+                    late: Number(document.getElementById('genLate').value),
+                    accidents: Number(document.getElementById('genAccidents').value),
+                    timestamp: new Date()
+                });
+                closeModals();
+                fetchAllData(); // Recargar gráficos
+            } catch(e) { console.error(e); alert("Error guardando"); }
+            hideLoading();
+        }
+
+        window.saveSecurity = async function() {
+            showLoading();
+            try {
+                await addDoc(collection(db, "security_logs"), {
+                    week: document.getElementById('secWeek').value,
+                    date: document.getElementById('secDate').value,
+                    score: Number(document.getElementById('secScore').value),
+                    incidents: Number(document.getElementById('secIncidents').value),
+                    work: Number(document.getElementById('secWork').value),
+                    rest: Number(document.getElementById('secRest').value),
+                    timestamp: new Date()
+                });
+                closeModals();
+                fetchAllData();
+            } catch(e) { console.error(e); alert("Error guardando"); }
+            hideLoading();
+        }
+
+        window.saveFleetStatus = async function() {
+            showLoading();
+            try {
+                await addDoc(collection(db, "fleet_status"), {
+                    mecanix: Number(document.getElementById('fleetMecanixPct').value),
+                    clima: Number(document.getElementById('fleetClimaPct').value),
+                    timestamp: new Date() // Para ordenar y sacar el ultimo
+                });
+                closeModals();
+                fetchFleetData();
+            } catch(e) { console.error(e); alert("Error guardando"); }
+            hideLoading();
+        }
+
+        window.saveFleetUnit = async function() {
+            showLoading();
+            try {
+                await addDoc(collection(db, "fleet_units"), {
+                    unit: document.getElementById('fleetUnit').value,
+                    model: document.getElementById('fleetModel').value,
+                    next: document.getElementById('fleetDate').value
+                });
+                closeModals();
+                fetchFleetData();
+            } catch(e) { console.error(e); alert("Error guardando"); }
+            hideLoading();
+        }
+
+        window.saveOperators = async function() {
+            showLoading();
+            try {
+                await addDoc(collection(db, "operator_logs"), {
+                    week: document.getElementById('opsWeek').value,
+                    date: document.getElementById('opsDate').value,
+                    alcohol: Number(document.getElementById('opsAlcohol').value),
+                    doping: Number(document.getElementById('opsDoping').value),
+                    image: Number(document.getElementById('opsImage').value),
+                    timestamp: new Date()
+                });
+                closeModals();
+                fetchAllData();
+            } catch(e) { console.error(e); alert("Error guardando"); }
+            hideLoading();
+        }
+
+        window.addIncident = async function() {
+            const date = document.getElementById('incDate').value;
+            const op = document.getElementById('incOp').value;
+            const desc = document.getElementById('incDesc').value;
+            if(!date || !op) return;
+
+            showLoading();
+            try {
+                await addDoc(collection(db, "incidents"), {
+                    date: date, operator: op, description: desc, timestamp: new Date()
+                });
+                // Limpiar inputs
+                document.getElementById('incOp').value = '';
+                document.getElementById('incDesc').value = '';
+                fetchIncidents();
+            } catch(e) { console.error(e); alert("Error agregando incidencia"); }
+            hideLoading();
+        }
+
+        // --- EVENT LISTENER DEL FILTRO GLOBAL ---
+        document.getElementById('globalWeekSelector').addEventListener('change', () => {
+            fetchAllData(); // Re-ejecutar consulta con el nuevo filtro
+        });
+
+        // --- INICIALIZACIÓN ---
+        initCharts();
+        // Cargar todo al inicio
+        fetchAllData();
+        fetchFleetData();
+        fetchIncidents();
+
+    </script>
+
+    <script>
+        // Funciones de UI básicas
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active', 'bg-blue-900'));
+            document.getElementById('btn-' + viewId.replace('view-','')).classList.add('nav-active');
+        }
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModals() { document.querySelectorAll('[id^="modal"]').forEach(el => el.classList.add('hidden')); }
+
+        // Configuración de Gráficos (Chart.js Instances)
+        let charts = {};
+
+        function initCharts() {
+            // General
+            charts.routeQuality = new Chart(document.getElementById('chartRouteQuality'), { type: 'line', data: { labels: [], datasets: [{ label: 'Calidad', data: [], borderColor: '#2563eb', tension:0.3 }] }, options: { maintainAspectRatio: false, scales:{y:{min:50,max:100}} } });
+            charts.serviceLevel = new Chart(document.getElementById('chartServiceLevel'), { type: 'line', data: { labels: [], datasets: [{ label: 'Nivel Servicio', data: [], borderColor: '#059669', tension:0.3 }] }, options: { maintainAspectRatio: false, scales:{y:{min:50,max:100}} } });
+            charts.lateStarts = new Chart(document.getElementById('chartLateStarts'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Retardos', data: [], backgroundColor: '#dc2626' }] }, options: { maintainAspectRatio: false } });
+            charts.accidents = new Chart(document.getElementById('chartAccidents'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Accidentes', data: [], backgroundColor: '#7f1d1d' }] }, options: { maintainAspectRatio: false } });
+
+            // Seguridad
+            charts.safetyScore = new Chart(document.getElementById('chartSafetyScore'), { type: 'line', data: { labels: [], datasets: [{ label: 'Score', data: [], borderColor: '#4f46e5', tension: 0.3 }] }, options: { maintainAspectRatio: false, scales:{y:{min:0,max:100}} } });
+            charts.incidentsPct = new Chart(document.getElementById('chartIncidentsPct'), { type: 'line', data: { labels: [], datasets: [{ label: '% Percances', data: [], borderColor: '#f59e0b', tension: 0.3 }] }, options: { maintainAspectRatio: false } });
+            charts.workHours = new Chart(document.getElementById('chartWorkHours'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Horas', data: [], backgroundColor: '#6366f1' }] }, options: { maintainAspectRatio: false } });
+            charts.restHours = new Chart(document.getElementById('chartRestHours'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Horas', data: [], backgroundColor: '#10b981' }] }, options: { maintainAspectRatio: false } });
+
+            // Flota
+            const gaugeOpts = { cutout: '70%', plugins: { tooltip: { enabled: false }, legend: {display: false} } };
+            charts.gaugeMecanix = new Chart(document.getElementById('gaugeMecanix'), { type: 'doughnut', data: { labels: ['OK', 'Mal'], datasets: [{ data: [100, 0], backgroundColor: ['#0d9488', '#e5e7eb'] }] }, options: gaugeOpts });
+            charts.gaugeClima = new Chart(document.getElementById('gaugeClima'), { type: 'doughnut', data: { labels: ['OK', 'Mal'], datasets: [{ data: [100, 0], backgroundColor: ['#0891b2', '#e5e7eb'] }] }, options: gaugeOpts });
+
+            // Operadores
+            charts.opsAlcohol = new Chart(document.getElementById('chartOpsAlcohol'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Cant', data: [], backgroundColor: '#9333ea' }] }, options: { maintainAspectRatio: false } });
+            charts.opsDoping = new Chart(document.getElementById('chartOpsDoping'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Cant', data: [], backgroundColor: '#a855f7' }] }, options: { maintainAspectRatio: false } });
+            charts.opsImage = new Chart(document.getElementById('chartOpsImage'), { type: 'line', data: { labels: [], datasets: [{ label: '%', data: [], borderColor: '#d8b4fe' }] }, options: { maintainAspectRatio: false, scales:{y:{min:0,max:100}} } });
+        }
+
+        // --- FUNCIONES DE ACTUALIZACIÓN VISUAL (Reciben datos desde Firebase) ---
+        
+        function updateGeneralCharts(data) {
+            const labels = data.map(d => d.date);
+            charts.routeQuality.data.labels = labels; charts.routeQuality.data.datasets[0].data = data.map(d => d.quality); charts.routeQuality.update();
+            charts.serviceLevel.data.labels = labels; charts.serviceLevel.data.datasets[0].data = data.map(d => d.service); charts.serviceLevel.update();
+            charts.lateStarts.data.labels = labels; charts.lateStarts.data.datasets[0].data = data.map(d => d.late); charts.lateStarts.update();
+            charts.accidents.data.labels = labels; charts.accidents.data.datasets[0].data = data.map(d => d.accidents); charts.accidents.update();
+        }
+
+        function updateSecurityCharts(data) {
+            const labels = data.map(d => d.date);
+            charts.safetyScore.data.labels = labels; charts.safetyScore.data.datasets[0].data = data.map(d => d.score); charts.safetyScore.update();
+            charts.incidentsPct.data.labels = labels; charts.incidentsPct.data.datasets[0].data = data.map(d => d.incidents); charts.incidentsPct.update();
+            charts.workHours.data.labels = labels; charts.workHours.data.datasets[0].data = data.map(d => d.work); charts.workHours.update();
+            charts.restHours.data.labels = labels; charts.restHours.data.datasets[0].data = data.map(d => d.rest); charts.restHours.update();
+        }
+
+        function updateFleetGauges(mecanix, clima) {
+            charts.gaugeMecanix.data.datasets[0].data = [mecanix, 100 - mecanix];
+            document.getElementById('textMecanix').innerText = mecanix + '%';
+            charts.gaugeMecanix.update();
+
+            charts.gaugeClima.data.datasets[0].data = [clima, 100 - clima];
+            document.getElementById('textClima').innerText = clima + '%';
+            charts.gaugeClima.update();
+        }
+
+        function renderFleetTable(units) {
+            const tbody = document.getElementById('fleetTableBody'); tbody.innerHTML = '';
+            units.forEach(item => {
+                const diffDays = Math.ceil((new Date(item.next) - new Date()) / (1000 * 60 * 60 * 24));
+                const badge = diffDays < 7 ? '<span class="text-red-600 font-bold">Vence Pronto</span>' : '<span class="text-green-600">Vigente</span>';
+                tbody.innerHTML += `<tr class="bg-white border-b"><td class="px-6 py-4 font-bold">${item.unit}</td><td class="px-6 py-4">${item.model}</td><td class="px-6 py-4">${item.next} (${diffDays}d)</td><td class="px-6 py-4">${badge}</td></tr>`;
+            });
+        }
+
+        function updateOperatorsCharts(data) {
+            const labels = data.map(d => d.date);
+            charts.opsAlcohol.data.labels = labels; charts.opsAlcohol.data.datasets[0].data = data.map(d => d.alcohol); charts.opsAlcohol.update();
+            charts.opsDoping.data.labels = labels; charts.opsDoping.data.datasets[0].data = data.map(d => d.doping); charts.opsDoping.update();
+            charts.opsImage.data.labels = labels; charts.opsImage.data.datasets[0].data = data.map(d => d.image); charts.opsImage.update();
+        }
+    </script>
+</body>
+</html>

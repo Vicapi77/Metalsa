@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Metalsa V12 - Salidas a Tiempo</title>
+    <title>Dashboard Metalsa V13 - Ajustes Finales</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -26,7 +26,7 @@
     <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
         <div class="p-6 text-center border-b border-gray-700">
             <h1 class="text-2xl font-bold tracking-wider">METALSA</h1>
-            <p class="text-xs text-gray-400 mt-1">Analytics V12</p>
+            <p class="text-xs text-gray-400 mt-1">Analytics V13</p>
         </div>
 
         <div class="p-4 bg-slate-800 border-b border-gray-700 space-y-4">
@@ -47,14 +47,12 @@
                     <option value="11">Noviembre</option>
                     <option value="12">Diciembre</option>
                 </select>
-                <p class="text-[10px] text-gray-400 mt-1 italic">Muestra promedios por Semana</p>
             </div>
             <div>
                 <label class="text-xs text-gray-400 uppercase font-bold mb-1 block"><i class="fas fa-filter"></i> Filtrar por Semana</label>
                 <select id="weekSelector" onchange="filterChanged('week')" class="w-full bg-slate-700 text-white p-2 rounded text-sm outline-none focus:ring-2 focus:ring-blue-500 border border-slate-600">
                     <option value="all">Todas / Actual</option>
                 </select>
-                <p class="text-[10px] text-gray-400 mt-1 italic">Muestra detalle Diario</p>
             </div>
         </div>
 
@@ -76,7 +74,7 @@
                 <i class="fas fa-users w-6"></i> Aforos Diarios
             </button>
             <button onclick="navigate('view-operadores')" id="btn-operadores" class="w-full text-left p-3 rounded hover:bg-slate-800 flex items-center gap-3 nav-item">
-                <i class="fas fa-id-card w-6"></i> Operadores
+                <i class="fas fa-id-card w-6"></i> Operadores & HC
             </button>
         </nav>
     </aside>
@@ -186,56 +184,79 @@
                     <button onclick="openModal('modalAforos')" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded shadow flex items-center gap-2"><i class="fas fa-bus"></i> Registrar</button>
                 </div>
             </header>
-            <div class="flex flex-col space-y-8">
-                <div class="card w-full"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 1</h3><div class="h-64"><canvas id="chartAforoT1"></canvas></div></div>
-                <div class="card w-full"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 2</h3><div class="h-64"><canvas id="chartAforoT2"></canvas></div></div>
-                <div class="card w-full"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 3</h3><div class="h-64"><canvas id="chartAforoT3"></canvas></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 1</h3><div class="h-64"><canvas id="chartAforoT1"></canvas></div></div>
+                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 2</h3><div class="h-64"><canvas id="chartAforoT2"></canvas></div></div>
+                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 3</h3><div class="h-64"><canvas id="chartAforoT3"></canvas></div></div>
+                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-blue-50 p-2 rounded">PROMEDIO (T1+T2+T3)/3</h3><div class="h-64"><canvas id="chartAforoAvg"></canvas></div></div>
             </div>
         </section>
 
         <section id="view-operadores" class="view-section hidden">
             <header class="flex justify-between items-center mb-6">
-                <div><h2 class="text-3xl font-bold text-gray-800">Operadores</h2></div>
+                <div><h2 class="text-3xl font-bold text-gray-800">Operadores & HC</h2></div>
                 <div class="flex gap-2">
                     <button onclick="openHistory('operator_logs')" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded shadow flex items-center gap-2"><i class="fas fa-history"></i> Datos</button>
                     <button onclick="openModal('modalOperators')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow flex items-center gap-2"><i class="fas fa-user-check"></i> Cargar</button>
                 </div>
             </header>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card"><h3 class="text-xs font-bold text-gray-500 uppercase">Alcoholemias</h3><div class="h-40"><canvas id="chartOpsAlcohol"></canvas></div></div>
-                <div class="card"><h3 class="text-xs font-bold text-gray-500 uppercase">Doping</h3><div class="h-40"><canvas id="chartOpsDoping"></canvas></div></div>
-                <div class="card"><h3 class="text-xs font-bold text-gray-500 uppercase">Imagen %</h3><div class="h-40"><canvas id="chartOpsImage"></canvas></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 uppercase border-b pb-1">Head Count (HC)</h3>
+                    <div class="h-64"><canvas id="chartOpsHC"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 uppercase border-b pb-1">Imagen (%)</h3>
+                    <div class="h-64"><canvas id="chartOpsImage"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 uppercase border-b pb-1">Alcoholemias (Conteo)</h3>
+                    <div class="h-64"><canvas id="chartOpsAlcohol"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 uppercase border-b pb-1">Doping (Conteo)</h3>
+                    <div class="h-64"><canvas id="chartOpsDoping"></canvas></div>
+                </div>
             </div>
+            
             <div class="card bg-gray-50 border border-gray-200">
-                <div class="flex justify-between items-center mb-4 border-b pb-2"><h3 class="font-bold text-lg text-gray-800"><i class="fas fa-exclamation-circle text-red-500"></i> Bitácora</h3></div>
-                <div class="flex gap-2 mb-4"><input type="date" id="incDate" class="border p-2 rounded text-sm"><input type="text" id="incOp" placeholder="Operador" class="border p-2 rounded text-sm flex-1"><input type="text" id="incDesc" placeholder="Descripción" class="border p-2 rounded text-sm flex-[2]"><button onclick="addIncident()" class="bg-red-500 text-white px-4 rounded font-bold">Agregar</button></div>
+                <div class="flex justify-between items-center mb-4 border-b pb-2"><h3 class="font-bold text-lg text-gray-800"><i class="fas fa-exclamation-circle text-red-500"></i> Bitácora Incidencias</h3></div>
+                <div class="flex gap-2 mb-4">
+                    <input type="date" id="incDate" class="border p-2 rounded text-sm">
+                    <input type="text" id="incOp" placeholder="Operador" class="border p-2 rounded text-sm flex-1">
+                    <input type="text" id="incDesc" placeholder="Descripción" class="border p-2 rounded text-sm flex-[2]">
+                    <button onclick="addIncident()" class="bg-red-500 hover:bg-red-600 text-white px-4 rounded font-bold shadow">Agregar</button>
+                </div>
                 <ul id="incidentList" class="space-y-2 max-h-60 overflow-y-auto pr-2"></ul>
             </div>
         </section>
     </main>
 
-    <div id="modalGeneral" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="modalOperators" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded shadow-lg w-96">
-            <h3 class="font-bold text-xl mb-4 text-blue-800">Cargar Operaciones</h3>
-            <input type="hidden" id="genId">
+            <h3 class="font-bold text-xl mb-4 text-purple-800">Cargar Operadores & HC</h3>
+            <input type="hidden" id="opsId">
             <label class="text-xs font-bold text-gray-500">Fecha</label>
-            <input type="date" id="genDate" onchange="autoWeek(this, 'genWeek')" class="w-full border p-2 mb-2 rounded font-bold">
-            <label class="text-xs font-bold text-gray-500">Semana (Auto)</label>
-            <input type="text" id="genWeek" class="w-full border p-2 mb-2 rounded bg-gray-100 text-gray-500" readonly>
+            <input type="date" id="opsDate" onchange="autoWeek(this, 'opsWeek')" class="w-full border p-2 mb-2 rounded font-bold">
+            <label class="text-xs font-bold text-gray-500">Semana (Auto: Dom-Sab)</label>
+            <input type="text" id="opsWeek" class="w-full border p-2 mb-4 rounded bg-gray-100 text-gray-500" readonly>
             
-            <input type="number" id="genOnTime" class="w-full border p-2 mb-2 rounded border-blue-300" placeholder="Salidas a Tiempo %">
-            <input type="number" id="genQuality" class="w-full border p-2 mb-2 rounded" placeholder="Calidad %">
-            <input type="number" id="genService" class="w-full border p-2 mb-2 rounded" placeholder="Servicio %">
-            <input type="number" id="genLate" class="w-full border p-2 mb-2 rounded" placeholder="Inicios Tarde">
-            <input type="number" id="genAccidents" class="w-full border p-2 mb-4 rounded" placeholder="Accidentes">
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div><label class="text-[10px] font-bold">Titulares</label><input type="number" id="opsTitulares" class="w-full border p-2 rounded" placeholder="Cant."></div>
+                <div><label class="text-[10px] font-bold">Postureros</label><input type="number" id="opsPostureros" class="w-full border p-2 rounded" placeholder="Cant."></div>
+            </div>
+            <div class="border-t my-2"></div>
+            <input type="number" id="opsAlcohol" class="w-full border p-2 mb-2 rounded" placeholder="Alcoholemias (Cant)">
+            <input type="number" id="opsDoping" class="w-full border p-2 mb-2 rounded" placeholder="Doping (Cant)">
+            <input type="number" id="opsImage" class="w-full border p-2 mb-4 rounded" placeholder="Imagen %">
             
-            <div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveGeneral()" class="bg-blue-600 text-white px-4 py-2 rounded">Guardar</button></div>
+            <div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveOperators()" class="bg-purple-600 text-white px-4 py-2 rounded">Guardar</button></div>
         </div>
     </div>
 
+    <div id="modalGeneral" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-blue-800">Cargar Operaciones</h3><input type="hidden" id="genId"><label class="text-xs font-bold text-gray-500">Fecha</label><input type="date" id="genDate" onchange="autoWeek(this, 'genWeek')" class="w-full border p-2 mb-2 rounded font-bold"><label class="text-xs font-bold text-gray-500">Semana (Auto)</label><input type="text" id="genWeek" class="w-full border p-2 mb-2 rounded bg-gray-100 text-gray-500" readonly><input type="number" id="genOnTime" class="w-full border p-2 mb-2 rounded border-blue-300" placeholder="Salidas a Tiempo %"><input type="number" id="genQuality" class="w-full border p-2 mb-2 rounded" placeholder="Calidad %"><input type="number" id="genService" class="w-full border p-2 mb-2 rounded" placeholder="Servicio %"><input type="number" id="genLate" class="w-full border p-2 mb-2 rounded" placeholder="Inicios Tarde"><input type="number" id="genAccidents" class="w-full border p-2 mb-4 rounded" placeholder="Accidentes"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveGeneral()" class="bg-blue-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
     <div id="modalSecurity" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96 max-h-screen overflow-y-auto"><h3 class="font-bold text-xl mb-4 text-indigo-800">Cargar Seguridad</h3><input type="hidden" id="secId"><label class="text-xs font-bold text-gray-500">Fecha</label><input type="date" id="secDate" onchange="autoWeek(this, 'secWeek')" class="w-full border p-2 mb-2 rounded font-bold"><label class="text-xs font-bold text-gray-500">Semana (Auto)</label><input type="text" id="secWeek" class="w-full border p-2 mb-2 rounded bg-gray-100 text-gray-500" readonly><input type="number" id="secScore" class="w-full border p-2 mb-1 rounded" placeholder="Score %"><input type="number" id="secIncidents" class="w-full border p-2 mb-1 rounded" placeholder="Percances %"><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="secWork" class="border p-2 rounded" placeholder="Hrs Trab."><input type="number" id="secRest" class="border p-2 rounded" placeholder="Hrs Desc."></div><div class="grid grid-cols-2 gap-2 mt-2"><input type="number" id="secImp" class="border p-2 rounded" placeholder="Imp."><input type="number" id="secNoImp" class="border p-2 rounded" placeholder="No Imp."></div><div class="flex justify-end gap-2 mt-4"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveSecurity()" class="bg-indigo-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
-    <div id="modalOperators" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-purple-800">Operadores</h3><input type="hidden" id="opsId"><label class="text-xs font-bold text-gray-500">Fecha</label><input type="date" id="opsDate" onchange="autoWeek(this, 'opsWeek')" class="w-full border p-2 mb-2 rounded font-bold"><label class="text-xs font-bold text-gray-500">Semana (Auto)</label><input type="text" id="opsWeek" class="w-full border p-2 mb-2 rounded bg-gray-100 text-gray-500" readonly><input type="number" id="opsAlcohol" class="w-full border p-2 mb-2 rounded" placeholder="Alcohol"><input type="number" id="opsDoping" class="w-full border p-2 mb-2 rounded" placeholder="Doping"><input type="number" id="opsImage" class="w-full border p-2 mb-4 rounded" placeholder="Imagen %"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveOperators()" class="bg-purple-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
-    <div id="modalHistory" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-full max-w-4xl max-h-[80vh] flex flex-col"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-xl text-gray-800">Historial y Edición</h3><button onclick="closeModals()" class="text-red-500 text-xl"><i class="fas fa-times"></i></button></div><div class="overflow-y-auto flex-1"><table class="w-full history-table"><thead id="historyHead"></thead><tbody id="historyBody"></tbody></table></div></div></div>
+    <div id="modalHistory" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-full max-w-4xl max-h-[80vh] flex flex-col"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-xl text-gray-800">Historial</h3><button onclick="closeModals()" class="text-red-500 text-xl"><i class="fas fa-times"></i></button></div><div class="overflow-y-auto flex-1"><table class="w-full history-table"><thead id="historyHead"></thead><tbody id="historyBody"></tbody></table></div></div></div>
     <div id="modalFleetStatus" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-teal-800">Status Flota</h3><input type="number" id="fleetMecanixPct" class="w-full border p-2 mb-2 rounded" placeholder="Mecanix %"><input type="number" id="fleetClimaPct" class="w-full border p-2 mb-2 rounded" placeholder="Climas %"><input type="number" id="fleetCheckPct" class="w-full border p-2 mb-4 rounded" placeholder="Checklist %"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveFleetStatus()" class="bg-teal-600 text-white px-4 py-2 rounded">Actualizar</button></div></div></div>
     <div id="modalFleetUnit" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-green-800">Nueva Unidad</h3><input type="text" id="fleetUnit" class="w-full border p-2 mb-2 rounded" placeholder="No. Unidad"><input type="text" id="fleetModel" class="w-full border p-2 mb-2 rounded" placeholder="Modelo"><input type="date" id="fleetDate" class="w-full border p-2 mb-4 rounded"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveFleetUnit()" class="bg-green-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
     <div id="modalAforos" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-orange-800">Registrar Aforo</h3><label class="block text-xs font-bold">Fecha</label><input type="date" id="aforoDateInput" class="w-full border p-2 mb-2 rounded bg-orange-50"><label class="block text-xs font-bold">Ruta</label><select id="aforoRuta" class="w-full border p-2 mb-2 rounded text-sm"><option value="">Seleccione...</option><option value="EL PEÑUELO">EL PEÑUELO</option><option value="EL SALITRE">EL SALITRE</option><option value="LA HEDIONDA">LA HEDIONDA</option><option value="LA SAUCEDA">LA SAUCEDA</option><option value="LOMA LINDA - URDIÑOLA">LOMA LINDA - URDIÑOLA</option><option value="LOS HOYOS - MACUYU">LOS HOYOS - MACUYU</option><option value="OTILIO">OTILIO</option><option value="PARRAS CASETA">PARRAS CASETA</option><option value="PARRAS LIBRE">PARRAS LIBRE</option><option value="PORVENIR - GENERAL CEPEDA">PORVENIR - GENERAL CEPEDA</option><option value="PUERTO MEXICO">PUERTO MEXICO</option><option value="ROMA">ROMA</option><option value="SALTILLO 2000">SALTILLO 2000</option><option value="SAN FRANCISCO">SAN FRANCISCO</option><option value="SAN MIGUEL">SAN MIGUEL</option><option value="SANTA MARIA - SAN RAFAEL">SANTA MARIA - SAN RAFAEL</option><option value="TANQUE DEL CERRO - LA VENTURA">TANQUE DEL CERRO - LA VENTURA</option><option value="TANQUE NUEVO">TANQUE NUEVO</option><option value="TERESITAS">TERESITAS</option><option value="VALENCIA">VALENCIA</option><option value="ZARAGOZA">ZARAGOZA</option></select><label class="block text-xs font-bold">Turno</label><select id="aforoTurno" class="w-full border p-2 mb-2 rounded"><option value="T1">Turno 1</option><option value="T2">Turno 2</option><option value="T3">Turno 3</option></select><label class="block text-xs font-bold">Cantidad</label><input type="number" id="aforoCant" class="w-full border p-2 mb-4 rounded"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveAforos()" class="bg-orange-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
@@ -259,51 +280,44 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // GLOBALES
-        window.db = db;
-        window.collection = collection;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
+        // EXPORTAR PARA USO GLOBAL
+        window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.doc = doc; window.updateDoc = updateDoc;
         
         const showLoading = () => document.getElementById('loadingIndicator').classList.remove('hidden');
         const hideLoading = () => document.getElementById('loadingIndicator').classList.add('hidden');
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('filterAforoDate').value = today;
         document.getElementById('aforoDateInput').value = today;
+        document.getElementById('incDate').value = today;
 
-        // Semanas
         const weekSelect = document.getElementById('weekSelector');
-        for(let i=1; i<=52; i++){
+        for(let i=1; i<=53; i++){
             let opt = document.createElement('option'); opt.value = `W${i}`; opt.innerText = `Semana ${i}`; weekSelect.appendChild(opt);
         }
 
-        // --- MANEJO DE FILTROS ---
         window.filterChanged = function(source) {
             const m = document.getElementById('monthSelector');
             const w = document.getElementById('weekSelector');
-            
-            if (source === 'month' && m.value !== "") {
-                w.value = "all"; 
-            } else if (source === 'week' && w.value !== "all") {
-                m.value = ""; 
-            }
+            if (source === 'month' && m.value !== "") w.value = "all"; 
+            else if (source === 'week' && w.value !== "all") m.value = ""; 
             fetchAllData();
         }
 
-        // --- AUTOMATIZACION SEMANA ---
+        // --- CALCULO DE SEMANA CORREGIDO (DOMINGO - SABADO) ---
         window.getWeekNumber = function(dStr) {
-            const d = new Date(dStr);
-            const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
-            const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
-            return `W${weekNo}`;
+            const date = new Date(dStr);
+            // Ajustamos para que la semana empiece en Domingo
+            const startOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - startOfYear) / 86400000;
+            // + startOfYear.getDay() + 1 asegura que se alinee al domingo
+            return "W" + Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
         }
+
         window.autoWeek = function(input, targetId) {
             if(input.value) document.getElementById(targetId).value = window.getWeekNumber(input.value);
         }
 
-        // --- AGREGACIÓN DE DATOS (DIARIO -> SEMANAL) ---
+        // --- AGREGACIÓN DATOS GENERALES ---
         function aggregateDataByWeek(dailyData) {
             const weeks = {};
             dailyData.forEach(d => {
@@ -312,17 +326,16 @@
                 weeks[w].items.push(d);
                 weeks[w].count++;
             });
-
             return Object.keys(weeks).sort().map(w => {
                 const items = weeks[w].items;
                 const count = weeks[w].count;
-                const res = { date: w, week: w }; 
-
-                // General (AGREGADO: onTime)
+                const res = { date: w, week: w };
+                
+                // General
                 if(items[0].quality !== undefined) {
+                    res.onTime = items.reduce((sum, i) => sum + Number(i.onTime||0), 0) / count;
                     res.quality = items.reduce((sum, i) => sum + Number(i.quality), 0) / count;
                     res.service = items.reduce((sum, i) => sum + Number(i.service), 0) / count;
-                    res.onTime = items.reduce((sum, i) => sum + Number(i.onTime || 0), 0) / count; // Nuevo Promedio
                     res.late = items.reduce((sum, i) => sum + Number(i.late), 0);
                     res.accidents = items.reduce((sum, i) => sum + Number(i.accidents), 0);
                 }
@@ -335,17 +348,51 @@
                     res.imputable = items.reduce((sum, i) => sum + Number(i.imputable||0), 0);
                     res.no_imputable = items.reduce((sum, i) => sum + Number(i.no_imputable||0), 0);
                 }
-                // Operators
-                if(items[0].image !== undefined) {
-                    res.image = items.reduce((sum, i) => sum + Number(i.image), 0) / count;
-                    res.alcohol = items.reduce((sum, i) => sum + Number(i.alcohol), 0);
-                    res.doping = items.reduce((sum, i) => sum + Number(i.doping), 0);
-                }
                 return res;
             });
         }
 
-        // --- FETCH MAIN DATA ---
+        // --- LOGICA ESPECIAL OPERADORES (1 BARRA POR SEMANA) ---
+        function processOperatorsData(data, viewMode) {
+            // viewMode: 'week' (filtro semana activo) o 'month' (filtro mes activo)
+            // Queremos agrupar por semana SIEMPRE si es 'month'.
+            // Si es 'week', queremos agrupar todo en un solo objeto (la semana seleccionada).
+
+            const grouped = {};
+            
+            data.forEach(d => {
+                // Si el filtro es por semana específica, la "clave" es la semana misma (ej W5)
+                // Si es por mes, la clave es d.week (W1, W2...)
+                const key = d.week; 
+                if(!grouped[key]) grouped[key] = { 
+                    week: key, count: 0, 
+                    alcohol: 0, doping: 0, imageSum: 0, 
+                    titularesSum: 0, posturerosSum: 0 
+                };
+                
+                grouped[key].count++;
+                grouped[key].alcohol += Number(d.alcohol || 0);
+                grouped[key].doping += Number(d.doping || 0);
+                grouped[key].imageSum += Number(d.image || 0);
+                grouped[key].titularesSum += Number(d.titulares || 0);
+                grouped[key].posturerosSum += Number(d.postureros || 0);
+            });
+
+            // Convertir objeto agrupado a array y promediar lo necesario
+            const result = Object.keys(grouped).sort().map(k => {
+                const g = grouped[k];
+                return {
+                    date: g.week, // Usamos la semana como etiqueta
+                    alcohol: g.alcohol, // Suma total eventos
+                    doping: g.doping,   // Suma total eventos
+                    image: g.imageSum / g.count, // Promedio
+                    titulares: Math.round(g.titularesSum / g.count), // Promedio redondeado (HC es snapshot)
+                    postureros: Math.round(g.posturerosSum / g.count) // Promedio
+                };
+            });
+            return result;
+        }
+
         let globalFleetAvg = 100;
 
         async function fetchAllData() {
@@ -374,16 +421,24 @@
                 secData = secData.filter(filterFn);
                 opsData = opsData.filter(filterFn);
 
+                // Lógica de visualización
                 if (selectedMonth) {
+                    // Mes: Promedios semanales
                     updateGeneralCharts(aggregateDataByWeek(genData));
                     updateSecurityCharts(aggregateDataByWeek(secData));
-                    updateOperatorsCharts(aggregateDataByWeek(opsData));
-                    document.getElementById('globalSubtitle').innerText = "Vista Mensual (Promedios Semanales)";
+                    updateOperatorsCharts(processOperatorsData(opsData, 'month')); // Especial ops
+                    document.getElementById('globalSubtitle').innerText = "Vista Mensual (Promedios)";
+                } else if (selectedWeek !== 'all') {
+                    // Semana específica: Detalle diario en General/Seguridad, pero 1 BARRA en Operadores
+                    updateGeneralCharts(genData); // General sigue siendo diario
+                    updateSecurityCharts(secData); // Seguridad sigue siendo diario
+                    updateOperatorsCharts(processOperatorsData(opsData, 'week')); // Ops consolidado
+                    document.getElementById('globalSubtitle').innerText = `Vista Semana ${selectedWeek}`;
                 } else {
-                    updateGeneralCharts(genData);
+                    // Vista global sin filtro (o todo el histórico)
+                    updateGeneralCharts(genData); 
                     updateSecurityCharts(secData);
-                    updateOperatorsCharts(opsData);
-                    document.getElementById('globalSubtitle').innerText = "Vista Diaria (Detalle)";
+                    updateOperatorsCharts(processOperatorsData(opsData, 'all'));
                 }
 
                 calculateGlobalSection(genData, secData);
@@ -392,7 +447,6 @@
             hideLoading();
         }
 
-        // --- GESTIÓN DE HISTORIAL (Updated with Salidas) ---
         window.openHistory = async function(collectionName) {
             showLoading();
             const q = query(collection(db, collectionName), orderBy("date", "desc"), limit(50));
@@ -404,10 +458,9 @@
             thead.innerHTML = ''; tbody.innerHTML = '';
 
             let headers = [];
-            // AGREGADO: 'Salidas' en headers
             if(collectionName === 'general_logs') headers = ['Fecha', 'Sem', 'Salidas %', 'Calidad', 'Servicio', 'Accidentes'];
             else if(collectionName === 'security_logs') headers = ['Fecha', 'Sem', 'Score', 'Percances', 'Fatiga'];
-            else if(collectionName === 'operator_logs') headers = ['Fecha', 'Sem', 'Alcohol', 'Doping', 'Imagen'];
+            else if(collectionName === 'operator_logs') headers = ['Fecha', 'Sem', 'HC (T/P)', 'Alcohol', 'Doping', 'Imagen'];
 
             let hRow = '<tr>';
             headers.forEach(h => hRow += `<th>${h}</th>`);
@@ -416,10 +469,9 @@
 
             data.forEach(item => {
                 let row = '<tr>';
-                // AGREGADO: item.onTime
                 if(collectionName === 'general_logs') row += `<td>${item.date}</td><td>${item.week}</td><td class="font-bold text-blue-600">${Number(item.onTime||0).toFixed(1)}%</td><td>${Number(item.quality).toFixed(1)}%</td><td>${Number(item.service).toFixed(1)}%</td><td>${item.accidents}</td>`;
                 else if(collectionName === 'security_logs') row += `<td>${item.date}</td><td>${item.week}</td><td>${Number(item.score).toFixed(1)}%</td><td>${Number(item.incidents).toFixed(1)}%</td><td>${item.work}/${item.rest}</td>`;
-                else if(collectionName === 'operator_logs') row += `<td>${item.date}</td><td>${item.week}</td><td>${item.alcohol}</td><td>${item.doping}</td><td>${Number(item.image).toFixed(1)}%</td>`;
+                else if(collectionName === 'operator_logs') row += `<td>${item.date}</td><td>${item.week}</td><td>${item.titulares||0}/${item.postureros||0}</td><td>${item.alcohol}</td><td>${item.doping}</td><td>${Number(item.image).toFixed(1)}%</td>`;
                 
                 row += `<td class="flex gap-2"><button onclick="editEntry('${collectionName}', '${item.id}')" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button><button onclick="deleteEntry('${collectionName}', '${item.id}')" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button></td></tr>`;
                 tbody.innerHTML += row;
@@ -463,9 +515,6 @@
             sortedKeys.forEach(key => {
                 const g = genData.find(d => d.date === key) || { quality: 0, service: 0 };
                 const s = secData.find(d => d.date === key) || { score: 0 };
-                
-                // Nota: No incluí "Salidas a tiempo" en el score global, solo en visualización.
-                // Si deseas incluirlo, cambia la fórmula aquí.
                 const scoreOps = (Number(g.quality) + Number(g.service)) / 2;
                 const scoreSec = Number(s.score);
                 const scoreFleet = globalFleetAvg;
@@ -474,49 +523,36 @@
                 globalTrend.push({ date: key, score: dailyGlobal });
 
                 if(dailyGlobal > 0) {
-                    breakdownAvgs.ops += scoreOps; 
-                    breakdownAvgs.sec += scoreSec; 
-                    breakdownAvgs.fleet += scoreFleet; 
-                    breakdownAvgs.count++;
+                    breakdownAvgs.ops += scoreOps; breakdownAvgs.sec += scoreSec; breakdownAvgs.fleet += scoreFleet; breakdownAvgs.count++;
                 }
             });
 
             charts.globalTrend.data.labels = globalTrend.map(d => d.date);
             charts.globalTrend.data.datasets[0].data = globalTrend.map(d => d.score.toFixed(1));
             charts.globalTrend.update();
-
             const count = breakdownAvgs.count || 1;
             charts.globalBreakdown.data.datasets[0].data = [(breakdownAvgs.ops/count).toFixed(1), (breakdownAvgs.sec/count).toFixed(1), (breakdownAvgs.fleet/count).toFixed(1)];
             charts.globalBreakdown.update();
-
             const periodAvg = globalTrend.reduce((a,b) => a + b.score, 0) / (globalTrend.length || 1);
             const scoreEl = document.getElementById('globalScoreDisplay');
             scoreEl.innerText = periodAvg.toFixed(1) + "%";
-            if(periodAvg >= 95) scoreEl.className = "text-3xl font-bold text-green-600";
-            else if(periodAvg >= 85) scoreEl.className = "text-3xl font-bold text-blue-600";
-            else scoreEl.className = "text-3xl font-bold text-red-600";
+            scoreEl.className = periodAvg >= 95 ? "text-3xl font-bold text-green-600" : (periodAvg >= 85 ? "text-3xl font-bold text-blue-600" : "text-3xl font-bold text-red-600");
         }
 
-        // FUNCIONES CRUD
         window.deleteEntry = async function(coll, id) { if(confirm("¿Seguro?")) { showLoading(); await deleteDoc(doc(db, coll, id)); fetchAllData(); window.openHistory(coll); } }
         
         window.editEntry = function(coll, id) {
             const item = window.tempHistoryData.find(i => i.id === id); if(!item) return;
             document.getElementById('modalHistory').classList.add('hidden');
             if(coll === 'general_logs') {
-                document.getElementById('genId').value = id; 
-                document.getElementById('genDate').value = item.date; 
-                document.getElementById('genWeek').value = item.week; 
-                document.getElementById('genOnTime').value = item.onTime || 0; // NUEVO
-                document.getElementById('genQuality').value = item.quality; 
-                document.getElementById('genService').value = item.service; 
-                document.getElementById('genLate').value = item.late; 
-                document.getElementById('genAccidents').value = item.accidents; 
-                openModal('modalGeneral');
+                document.getElementById('genId').value = id; document.getElementById('genDate').value = item.date; document.getElementById('genWeek').value = item.week; document.getElementById('genOnTime').value = item.onTime || 0; document.getElementById('genQuality').value = item.quality; document.getElementById('genService').value = item.service; document.getElementById('genLate').value = item.late; document.getElementById('genAccidents').value = item.accidents; openModal('modalGeneral');
             } else if(coll === 'security_logs') {
                 document.getElementById('secId').value = id; document.getElementById('secDate').value = item.date; document.getElementById('secWeek').value = item.week; document.getElementById('secScore').value = item.score; document.getElementById('secIncidents').value = item.incidents; document.getElementById('secWork').value = item.work; document.getElementById('secRest').value = item.rest; document.getElementById('secImp').value = item.imputable; document.getElementById('secNoImp').value = item.no_imputable; openModal('modalSecurity');
             } else if(coll === 'operator_logs') {
-                document.getElementById('opsId').value = id; document.getElementById('opsDate').value = item.date; document.getElementById('opsWeek').value = item.week; document.getElementById('opsAlcohol').value = item.alcohol; document.getElementById('opsDoping').value = item.doping; document.getElementById('opsImage').value = item.image; openModal('modalOperators');
+                document.getElementById('opsId').value = id; document.getElementById('opsDate').value = item.date; document.getElementById('opsWeek').value = item.week; 
+                document.getElementById('opsTitulares').value = item.titulares || 0; 
+                document.getElementById('opsPostureros').value = item.postureros || 0;
+                document.getElementById('opsAlcohol').value = item.alcohol; document.getElementById('opsDoping').value = item.doping; document.getElementById('opsImage').value = item.image; openModal('modalOperators');
             }
         }
         
@@ -527,29 +563,27 @@
             document.getElementById(idField).value = ''; closeModals();
         }
 
-        // GUARDAR GENERAL ACTUALIZADO con onTime
-        window.saveGeneral = async function() { 
-            await genericSave("general_logs", "genId", { 
-                week: val('genWeek'), 
-                date: val('genDate'), 
-                onTime: num('genOnTime'), // NUEVO CAMPO
-                quality: num('genQuality'), 
-                service: num('genService'), 
-                late: num('genLate'), 
-                accidents: num('genAccidents') 
-            }); 
-            fetchAllData(); 
-        }
-
+        window.saveGeneral = async function() { await genericSave("general_logs", "genId", { week: val('genWeek'), date: val('genDate'), onTime: num('genOnTime'), quality: num('genQuality'), service: num('genService'), late: num('genLate'), accidents: num('genAccidents') }); fetchAllData(); }
         window.saveSecurity = async function() { await genericSave("security_logs", "secId", { week: val('secWeek'), date: val('secDate'), score: num('secScore'), incidents: num('secIncidents'), work: num('secWork'), rest: num('secRest'), imputable: num('secImp'), no_imputable: num('secNoImp') }); fetchAllData(); }
-        window.saveOperators = async function() { await genericSave("operator_logs", "opsId", { week: val('opsWeek'), date: val('opsDate'), alcohol: num('opsAlcohol'), doping: num('opsDoping'), image: num('opsImage') }); fetchAllData(); }
+        // SAVE OPERATORS ACTUALIZADO CON HC
+        window.saveOperators = async function() { await genericSave("operator_logs", "opsId", { week: val('opsWeek'), date: val('opsDate'), titulares: num('opsTitulares'), postureros: num('opsPostureros'), alcohol: num('opsAlcohol'), doping: num('opsDoping'), image: num('opsImage') }); fetchAllData(); }
+        
         window.saveFleetStatus = async function() { await addDoc(collection(db, "fleet_status"), { mecanix: num('fleetMecanixPct'), clima: num('fleetClimaPct'), checklist: num('fleetCheckPct'), timestamp: new Date() }); fetchFleetData(); fetchAllData(); closeModals(); }
         window.saveFleetUnit = async function() { await addDoc(collection(db, "fleet_units"), { unit: val('fleetUnit'), model: val('fleetModel'), next: val('fleetDate') }); fetchFleetData(); closeModals(); }
         window.saveAforos = async function() { const dateVal = document.getElementById('aforoDateInput').value; await addDoc(collection(db, "aforos_logs"), { date: dateVal, ruta: val('aforoRuta'), turno: val('aforoTurno'), cantidad: num('aforoCant'), timestamp: new Date() }); closeModals(); document.getElementById('filterAforoDate').value = dateVal; fetchAforosData(); }
         
+        // --- ADD INCIDENT FIX ---
+        window.addIncident = async function() {
+            const date = val('incDate'); const op = val('incOp'); const desc = val('incDesc');
+            if(!date || !op || !desc) return alert("Complete todos los campos");
+            showLoading();
+            await addDoc(collection(db, "incidents"), { date: date, operator: op, description: desc, timestamp: new Date() });
+            document.getElementById('incOp').value = ''; document.getElementById('incDesc').value = '';
+            fetchIncidents(); hideLoading();
+        }
+
         function val(id) { return document.getElementById(id).value; }
         function num(id) { return Number(document.getElementById(id).value) || 0; }
-        window.addIncident = async function() { /* ... */ }
         window.closeModals = closeModals;
 
         document.getElementById('filterAforoDate').addEventListener('change', fetchAforosData);
@@ -565,6 +599,9 @@
             const list = document.getElementById('incidentList'); list.innerHTML = '';
             snap.forEach(d => { list.innerHTML += `<li class="bg-white p-2 rounded shadow border-l-4 border-red-500 text-sm"><span class="font-bold text-gray-500 text-xs">${d.data().date}</span> <span class="font-bold">${d.data().operator}</span>: ${d.data().description}</li>`; });
         }
+
+        // --- INICIALIZACIÓN DE MODULOS DE JS (Importado) ---
+        // (El bloque module maneja imports, pero funciones globales deben ser asignadas a window arriba)
     </script>
 
     <script>
@@ -596,9 +633,7 @@
             charts.globalTrend = new Chart(document.getElementById('chartGlobalTrend'), { type: 'line', data: { labels: [], datasets: [{ label: 'Score Global', data: [], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.4, pointRadius: 5 }] }, options: { ...commonOptions, scales: { y: { min: 70, max: 100 } } } });
             charts.globalBreakdown = new Chart(document.getElementById('chartGlobalBreakdown'), { type: 'bar', data: { labels: ['Operación', 'Seguridad', 'Flota'], datasets: [{ label: 'Calificación Promedio', data: [0,0,0], backgroundColor: ['#3b82f6', '#4f46e5', '#0d9488'] }] }, options: { ...commonOptions, scales: { y: { beginAtZero: true, max: 100 } }, indexAxis: 'y' } });
             
-            // NUEVO CHART: SALIDAS A TIEMPO
             charts.onTime = new Chart(document.getElementById('chartOnTime'), { type: 'line', data: { labels: [], datasets: [{ label: 'Cumplimiento %', data: [], borderColor: '#0ea5e9', tension:0.3 }, { label: 'Objetivo', data: [], borderColor: 'gray', borderDash: [5,5], pointRadius: 0, borderWidth: 2, datalabels: { display: false } }] }, options: { ...commonOptions, scales: scale80_110 } });
-
             charts.routeQuality = new Chart(document.getElementById('chartRouteQuality'), { type: 'line', data: { labels: [], datasets: [{ label: 'Calidad', data: [], borderColor: '#2563eb', tension:0.3 }, { label: 'Objetivo', data: [], borderColor: 'gray', borderDash: [5,5], pointRadius: 0, borderWidth: 2, datalabels: { display: false } }] }, options: { ...commonOptions, scales: scale80_110 } });
             charts.serviceLevel = new Chart(document.getElementById('chartServiceLevel'), { type: 'line', data: { labels: [], datasets: [{ label: 'Nivel Servicio', data: [], borderColor: '#059669', tension:0.3 }, { label: 'Objetivo', data: [], borderColor: 'gray', borderDash: [5,5], pointRadius: 0, borderWidth: 2, datalabels: { display: false } }] }, options: { ...commonOptions, scales: scale80_110 } });
             charts.lateStarts = new Chart(document.getElementById('chartLateStarts'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Retardos', data: [], backgroundColor: '#dc2626' }] }, options: commonOptions });
@@ -617,22 +652,20 @@
             charts.aforoT1 = new Chart(document.getElementById('chartAforoT1'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#f97316' }] }, options: commonOptions });
             charts.aforoT2 = new Chart(document.getElementById('chartAforoT2'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#ea580c' }] }, options: commonOptions });
             charts.aforoT3 = new Chart(document.getElementById('chartAforoT3'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#c2410c' }] }, options: commonOptions });
+            charts.aforoAvg = new Chart(document.getElementById('chartAforoAvg'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Promedio Turnos', data: [], backgroundColor: '#2563eb' }] }, options: commonOptions });
             
+            // OPERADORES
+            // HC Stacked
+            charts.opsHC = new Chart(document.getElementById('chartOpsHC'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Titulares', data: [], backgroundColor: '#0f766e' }, { label: 'Postureros', data: [], backgroundColor: '#fbbf24' }] }, options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
             charts.opsAlcohol = new Chart(document.getElementById('chartOpsAlcohol'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Cant', data: [], backgroundColor: '#9333ea' }] }, options: commonOptions });
             charts.opsDoping = new Chart(document.getElementById('chartOpsDoping'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Cant', data: [], backgroundColor: '#a855f7' }] }, options: commonOptions });
-            charts.opsImage = new Chart(document.getElementById('chartOpsImage'), { type: 'line', data: { labels: [], datasets: [{ label: '%', data: [], borderColor: '#d8b4fe' }] }, options: { ...commonOptions, scales: { y: { min: 0, max: 100 } } } });
+            charts.opsImage = new Chart(document.getElementById('chartOpsImage'), { type: 'bar', data: { labels: [], datasets: [{ label: '%', data: [], backgroundColor: '#d8b4fe' }] }, options: { ...commonOptions, scales: { y: { min: 0, max: 100 } } } });
         }
 
         // UPDATE FUNCTIONS
         function updateGeneralCharts(data) {
             const labels = data.map(d => d.date); const len = labels.length;
-            
-            // NUEVO UPDATE
-            charts.onTime.data.labels = labels; 
-            charts.onTime.data.datasets[0].data = data.map(d => d.onTime); 
-            charts.onTime.data.datasets[1].data = createTargetArray(len, 97); 
-            charts.onTime.update();
-
+            charts.onTime.data.labels = labels; charts.onTime.data.datasets[0].data = data.map(d => d.onTime); charts.onTime.data.datasets[1].data = createTargetArray(len, 97); charts.onTime.update();
             charts.routeQuality.data.labels = labels; charts.routeQuality.data.datasets[0].data = data.map(d => d.quality); charts.routeQuality.data.datasets[1].data = createTargetArray(len, 97); charts.routeQuality.update();
             charts.serviceLevel.data.labels = labels; charts.serviceLevel.data.datasets[0].data = data.map(d => d.service); charts.serviceLevel.data.datasets[1].data = createTargetArray(len, 97); charts.serviceLevel.update();
             charts.lateStarts.data.labels = labels; charts.lateStarts.data.datasets[0].data = data.map(d => d.late); charts.lateStarts.update();
@@ -646,12 +679,22 @@
             charts.hoursStacked.data.labels = labels; charts.hoursStacked.data.datasets[0].data = createTargetArray(len, 8); charts.hoursStacked.data.datasets[1].data = data.map(d => d.work); charts.hoursStacked.data.datasets[2].data = data.map(d => d.rest); charts.hoursStacked.update();
             charts.incidentsStacked.data.labels = labels; charts.incidentsStacked.data.datasets[0].data = data.map(d => d.imputable || 0); charts.incidentsStacked.data.datasets[1].data = data.map(d => d.no_imputable || 0); charts.incidentsStacked.update();
         }
+
+        // ACTUALIZADO PARA HC Y BARRAS UNICAS
         function updateOperatorsCharts(data) {
+            // 'data' ya viene procesada (1 objeto por semana o varios según filtro)
             const labels = data.map(d => d.date);
+            
+            charts.opsHC.data.labels = labels;
+            charts.opsHC.data.datasets[0].data = data.map(d => d.titulares);
+            charts.opsHC.data.datasets[1].data = data.map(d => d.postureros);
+            charts.opsHC.update();
+
             charts.opsAlcohol.data.labels = labels; charts.opsAlcohol.data.datasets[0].data = data.map(d => d.alcohol); charts.opsAlcohol.update();
             charts.opsDoping.data.labels = labels; charts.opsDoping.data.datasets[0].data = data.map(d => d.doping); charts.opsDoping.update();
             charts.opsImage.data.labels = labels; charts.opsImage.data.datasets[0].data = data.map(d => d.image); charts.opsImage.update();
         }
+
         function updateFleetGauges(m, c, ch) {
             charts.gaugeMecanix.data.datasets[0].data = [m, 100-m]; document.getElementById('textMecanix').innerText = m+'%'; charts.gaugeMecanix.update();
             charts.gaugeClima.data.datasets[0].data = [c, 100-c]; document.getElementById('textClima').innerText = c+'%'; charts.gaugeClima.update();
@@ -665,11 +708,33 @@
                 tb.innerHTML += `<tr class="bg-white border-b"><td class="px-6 py-4 font-bold">${u.unit}</td><td class="px-6 py-4">${u.model}</td><td class="px-6 py-4">${u.next} (${diff}d)</td><td class="px-6 py-4">${statusHtml}</td></tr>`;
             });
         }
+        
+        // ACTUALIZADO CON PROMEDIO
         function updateAforosCharts(data) {
-            const t1 = data.filter(d => d.turno === 'T1'); const t2 = data.filter(d => d.turno === 'T2'); const t3 = data.filter(d => d.turno === 'T3');
-            charts.aforoT1.data.labels = t1.map(d => d.ruta); charts.aforoT1.data.datasets[0].data = t1.map(d => d.cantidad); charts.aforoT1.update();
-            charts.aforoT2.data.labels = t2.map(d => d.ruta); charts.aforoT2.data.datasets[0].data = t2.map(d => d.cantidad); charts.aforoT2.update();
-            charts.aforoT3.data.labels = t3.map(d => d.ruta); charts.aforoT3.data.datasets[0].data = t3.map(d => d.cantidad); charts.aforoT3.update();
+            // Obtener rutas únicas presentes en los datos
+            const rutas = [...new Set(data.map(d => d.ruta))].sort();
+            
+            const getDataByTurno = (turno) => rutas.map(r => {
+                const entry = data.find(d => d.ruta === r && d.turno === turno);
+                return entry ? entry.cantidad : 0;
+            });
+
+            const t1Data = getDataByTurno('T1');
+            const t2Data = getDataByTurno('T2');
+            const t3Data = getDataByTurno('T3');
+
+            // Calcular promedio por ruta
+            const avgData = rutas.map((r, i) => {
+                const sum = t1Data[i] + t2Data[i] + t3Data[i];
+                return Math.round(sum / 3);
+            });
+
+            charts.aforoT1.data.labels = rutas; charts.aforoT1.data.datasets[0].data = t1Data; charts.aforoT1.update();
+            charts.aforoT2.data.labels = rutas; charts.aforoT2.data.datasets[0].data = t2Data; charts.aforoT2.update();
+            charts.aforoT3.data.labels = rutas; charts.aforoT3.data.datasets[0].data = t3Data; charts.aforoT3.update();
+            
+            // Nuevo grafico promedio
+            charts.aforoAvg.data.labels = rutas; charts.aforoAvg.data.datasets[0].data = avgData; charts.aforoAvg.update();
         }
     </script>
 </body>

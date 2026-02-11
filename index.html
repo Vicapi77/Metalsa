@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Metalsa V16 - Master</title>
+    <title>Dashboard Metalsa V17 - Semana Corregida</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -26,7 +26,7 @@
     <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
         <div class="p-6 text-center border-b border-gray-700">
             <h1 class="text-2xl font-bold tracking-wider">METALSA</h1>
-            <p class="text-xs text-gray-400 mt-1">Analytics V16</p>
+            <p class="text-xs text-gray-400 mt-1">Analytics V17</p>
         </div>
 
         <div class="p-4 bg-slate-800 border-b border-gray-700 space-y-4">
@@ -316,12 +316,19 @@
             fetchAllData();
         }
 
-        // CAMBIO: SEMANA LUNES-DOMINGO (ISO 8601)
+        // CAMBIO: SEMANA LUNES-DOMINGO (FIX ZONA HORARIA Y LOGICA)
         window.getWeekNumber = function(dStr) {
-            const d = new Date(dStr);
-            const day = d.getDay() || 7; // Get current day number, converting Sun(0) to 7
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() + 4 - day); // Set to nearest Thursday: current date + 4 - current day number
+            if(!dStr) return "";
+            // Parseo manual para evitar que "2024-02-12" se convierta en UTC y reste horas (cayendo en domingo)
+            const parts = dStr.split('-');
+            // Crear fecha local estricta: año, mes (base 0), dia
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            
+            // Establecer a jueves de la semana actual para calculo ISO
+            // getDay(): 0=Dom, 1=Lun. Convertimos a: 1=Lun ... 7=Dom
+            const dayNum = d.getDay() || 7;
+            d.setDate(d.getDate() + 4 - dayNum);
+            
             const yearStart = new Date(d.getFullYear(), 0, 1);
             const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
             return "W" + weekNo;
@@ -352,8 +359,6 @@
                     res.accidents = items.reduce((sum, i) => sum + Number(i.accidents), 0);
                 }
                 if(items[0].score !== undefined || items[0].imputable !== undefined) {
-                    // Combinar logica para cuando los registros pueden estar separados
-                    // Algunos registros tienen KPI, otros Incidentes
                     let scoreSum = 0, scoreCount = 0;
                     let incSum = 0, incCount = 0;
                     
@@ -448,7 +453,6 @@
                     globalFleetAvg = 0;
                 }
 
-                // Consolidation logic is the same for charts
                 const aggGen = aggregateDataByWeek(genData);
                 const aggSec = aggregateDataByWeek(secData);
                 const aggOps = processOperatorsData(opsData);
@@ -460,7 +464,7 @@
                     calculateGlobalSection(aggGen, aggSec); 
                     document.getElementById('globalSubtitle').innerText = "Vista Mensual (Por Semanas)";
                 } else if (selectedWeek !== 'all') {
-                    updateGeneralCharts(genData); // Show Daily points if single week
+                    updateGeneralCharts(genData); 
                     updateSecurityCharts(secData, secData);
                     updateOperatorsCharts(processOperatorsData(opsData));
                     calculateGlobalSection(genData, secData);
@@ -473,7 +477,6 @@
                     document.getElementById('globalSubtitle').innerText = "Vista General (Todas)";
                 }
                 
-                // Actualizar Aforos con Filtros Globales (Logica Nueva)
                 fetchAforosData(selectedMonth, selectedWeek);
 
             } catch (error) { console.error("Error data:", error); }
@@ -493,7 +496,7 @@
 
             let headers = [];
             if(collectionName === 'general_logs') headers = ['Fecha', 'Sem', 'Salidas', 'Calidad', 'Servicio', 'Tarde %'];
-            else if(collectionName === 'security_logs') headers = ['Fecha', 'Sem', 'Score', 'Incidencias']; // Simplificado
+            else if(collectionName === 'security_logs') headers = ['Fecha', 'Sem', 'Score', 'Incidencias']; 
             else if(collectionName === 'operator_logs') headers = ['Fecha', 'Sem', 'HC', 'Alcohol', 'Doping', 'Imagen'];
 
             let hRow = '<tr>';
@@ -505,7 +508,6 @@
                 let row = '<tr>';
                 if(collectionName === 'general_logs') row += `<td>${item.date}</td><td>${item.week}</td><td class="font-bold text-blue-600">${Number(item.onTime||0).toFixed(1)}%</td><td>${Number(item.quality).toFixed(1)}%</td><td>${Number(item.service).toFixed(1)}%</td><td>${Number(item.late||0).toFixed(1)}%</td>`;
                 else if(collectionName === 'security_logs') {
-                    // Mostrar resumen inteligente
                     let info = "";
                     if(item.score) info += `Score: ${item.score}% `;
                     if(item.imputable) info += `Imp: ${item.imputable} `;
@@ -525,12 +527,10 @@
             const labelEl = document.getElementById('aforoGlobalLabel');
             
             try {
-                // 1. Datos del día específico
                 const qDay = query(collection(db, "aforos_logs"), where("date", "==", dateSpecific));
                 const snapDay = await getDocs(qDay);
                 updateAforosDayCharts(snapDay.docs.map(doc => doc.data()));
 
-                // 2. Datos Globales (NUEVA LOGICA)
                 const qAll = query(collection(db, "aforos_logs"), orderBy("date")); 
                 const snapAll = await getDocs(qAll);
                 let allData = snapAll.docs.map(doc => ({ ...doc.data(), week: window.getWeekNumber(doc.data().date) }));
@@ -598,14 +598,12 @@
         
         async function genericSave(coll, idField, data) {
             showLoading(); const id = document.getElementById(idField).value;
-            // Para seguridad, como separamos, siempre agrega nuevo para simplificar en esta version, el usuario puede borrar en historial
             await addDoc(collection(db, coll), { ...data, timestamp: new Date() });
             document.getElementById(idField).value = ''; closeModals();
         }
 
         window.saveGeneral = async function() { await genericSave("general_logs", "genId", { week: val('genWeek'), date: val('genDate'), onTime: num('genOnTime'), quality: num('genQuality'), service: num('genService'), late: num('genLate'), accidents: num('genAccidents') }); fetchAllData(); }
         
-        // SEGURIDAD: DOS FUNCIONES DE GUARDADO
         window.saveSecurityKPI = async function() { 
             await genericSave("security_logs", "secIdKPI", { 
                 week: val('secWeekKPI'), date: val('secDateKPI'), 
@@ -707,7 +705,6 @@
             charts.aforoT3 = new Chart(document.getElementById('chartAforoT3'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#c2410c' }] }, options: commonOptions });
             charts.aforoAvg = new Chart(document.getElementById('chartAforoAvg'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Promedio Turnos', data: [], backgroundColor: '#2563eb' }] }, options: commonOptions });
             
-            // NUEVA CHART AFORO GLOBAL (Reemplaza las anteriores)
             charts.aforoGlobalRoute = new Chart(document.getElementById('chartAforoGlobalRoute'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Promedio Pax', data: [], backgroundColor: '#7c3aed' }] }, options: commonOptions });
 
             charts.opsHC = new Chart(document.getElementById('chartOpsHC'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Titulares', data: [], backgroundColor: '#0f766e' }, { label: 'Postureros', data: [], backgroundColor: '#fbbf24' }] }, options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
@@ -775,9 +772,7 @@
             charts.aforoAvg.data.labels = rutas; charts.aforoAvg.data.datasets[0].data = avg; charts.aforoAvg.update();
         }
         
-        // NUEVA FUNCION: AFORO GLOBAL POR RUTA
         function updateAforosGlobalRoute(data) {
-            // Agrupar por ruta
             const routeGroups = {};
             data.forEach(d => {
                 if(!routeGroups[d.ruta]) routeGroups[d.ruta] = [];
@@ -788,10 +783,7 @@
                 const arr = routeGroups[r];
                 return Math.round(arr.reduce((a,b)=>a+b,0) / arr.length);
             });
-            
-            charts.aforoGlobalRoute.data.labels = rutas;
-            charts.aforoGlobalRoute.data.datasets[0].data = avgs;
-            charts.aforoGlobalRoute.update();
+            charts.aforoGlobalRoute.data.labels = rutas; charts.aforoGlobalRoute.data.datasets[0].data = avgs; charts.aforoGlobalRoute.update();
         }
     </script>
 </body>

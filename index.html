@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Metalsa V18 - Ajustes y Optimizaciones</title>
+    <title>Dashboard Metalsa V20 - Ajustes y Optimizaciones</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -26,7 +26,7 @@
     <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
         <div class="p-6 text-center border-b border-gray-700">
             <h1 class="text-2xl font-bold tracking-wider">METALSA</h1>
-            <p class="text-xs text-gray-400 mt-1">Analytics V18</p>
+            <p class="text-xs text-gray-400 mt-1">Analytics V20</p>
         </div>
 
         <div class="p-4 bg-slate-800 border-b border-gray-700 space-y-4">
@@ -121,6 +121,14 @@
                     <button onclick="openModal('modalSecurityIncidents')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded shadow flex items-center gap-2 text-sm"><i class="fas fa-exclamation-triangle"></i> Cargar Incidencias</button>
                 </div>
             </header>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white p-4 rounded shadow border-l-4 border-indigo-500"><p class="text-xs text-gray-500 font-bold uppercase">Promedio Score Seguridad</p><p id="avgSecScore" class="text-2xl font-bold text-indigo-700">--%</p></div>
+                <div class="bg-white p-4 rounded shadow border-l-4 border-yellow-500"><p class="text-xs text-gray-500 font-bold uppercase">Promedio Percances</p><p id="avgSecIncidents" class="text-2xl font-bold text-yellow-700">--%</p></div>
+                <div class="bg-white p-4 rounded shadow border-l-4 border-red-500"><p class="text-xs text-gray-500 font-bold uppercase">Total Imputables</p><p id="totSecImp" class="text-2xl font-bold text-red-700">--</p></div>
+                <div class="bg-white p-4 rounded shadow border-l-4 border-blue-500"><p class="text-xs text-gray-500 font-bold uppercase">Total No Imputables</p><p id="totSecNoImp" class="text-2xl font-bold text-blue-700">--</p></div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2">Score Seguridad (%) - Obj 97%</h3><div class="h-48"><canvas id="chartSafetyScore"></canvas></div></div>
                 <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2">Percances (%)</h3><div class="h-48"><canvas id="chartIncidentsPct"></canvas></div></div>
@@ -183,10 +191,11 @@
             </header>
             
             <div class="grid grid-cols-1 gap-6 mb-8">
-                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 1</h3><div class="h-80"><canvas id="chartAforoT1"></canvas></div></div>
-                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 2</h3><div class="h-80"><canvas id="chartAforoT2"></canvas></div></div>
-                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 3</h3><div class="h-80"><canvas id="chartAforoT3"></canvas></div></div>
-                <div class="card"><h3 class="text-lg font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-blue-50 p-2 rounded">PROMEDIO DÍA</h3><div class="h-80"><canvas id="chartAforoAvg"></canvas></div></div>
+                <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 1</h3><div class="h-80"><canvas id="chartAforoT1"></canvas></div></div>
+                <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 2</h3><div class="h-80"><canvas id="chartAforoT2"></canvas></div></div>
+                <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-orange-50 p-2 rounded">TURNO 3</h3><div class="h-80"><canvas id="chartAforoT3"></canvas></div></div>
+                <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-purple-50 p-2 rounded">SECUENCIADOS</h3><div class="h-80"><canvas id="chartAforoSEC"></canvas></div></div>
+                <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 border-b pb-2 text-center bg-blue-50 p-2 rounded">PROMEDIO DÍA</h3><div class="h-80"><canvas id="chartAforoAvg"></canvas></div></div>
             </div>
 
             <div class="card">
@@ -213,7 +222,7 @@
                 <div class="card"><h3 class="text-sm font-bold text-gray-700 mb-2 uppercase border-b pb-1">Doping (100%) - Por SEMANA</h3><div class="h-64"><canvas id="chartOpsDoping"></canvas></div></div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="card md:col-span-2 bg-gray-50 border border-gray-200">
                     <div class="flex justify-between items-center mb-4 border-b pb-2"><h3 class="font-bold text-lg text-gray-800"><i class="fas fa-exclamation-circle text-red-500"></i> Bitácora Incidencias (Filtrado)</h3></div>
                     <div class="flex flex-wrap gap-2 mb-4 bg-white p-2 rounded shadow-sm items-center">
@@ -230,6 +239,26 @@
                 <div class="card">
                     <h3 class="font-bold text-lg text-gray-800 border-b pb-2 mb-4 text-center">Estatus Incidencias</h3>
                     <div class="h-64"><canvas id="chartIncidentsStatus"></canvas></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card md:col-span-2 bg-orange-50 border border-orange-200">
+                    <div class="flex justify-between items-center mb-4 border-b border-orange-200 pb-2"><h3 class="font-bold text-lg text-gray-800"><i class="fas fa-comments text-orange-600"></i> Bitácora Quejas (Filtrado)</h3></div>
+                    <div class="flex flex-wrap gap-2 mb-4 bg-white p-2 rounded shadow-sm items-center">
+                        <input type="hidden" id="compId"><input type="date" id="compDate" class="border p-2 rounded text-sm w-32">
+                        <input type="text" id="compType" placeholder="Tipo de Queja" class="border p-2 rounded text-sm w-32">
+                        <input type="text" id="compDesc" placeholder="Descripción..." class="border p-2 rounded text-sm flex-1">
+                        <input type="text" id="compAction" placeholder="Acción Tomada..." class="border p-2 rounded text-sm flex-1">
+                        <select id="compStatus" class="border p-2 rounded text-sm"><option value="Abierto">Abierto</option><option value="Cerrado">Cerrado</option></select>
+                        <button onclick="saveComplaint()" id="btnSaveComp" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-bold shadow text-sm">Agregar</button>
+                        <button onclick="cancelCompEdit()" id="btnCancelComp" class="hidden bg-gray-400 text-white px-3 py-2 rounded shadow text-sm">X</button>
+                    </div>
+                    <ul id="complaintList" class="space-y-2 max-h-60 overflow-y-auto pr-2"></ul>
+                </div>
+                <div class="card">
+                    <h3 class="font-bold text-lg text-gray-800 border-b pb-2 mb-4 text-center">Estatus Quejas</h3>
+                    <div class="h-64"><canvas id="chartComplaintsStatus"></canvas></div>
                 </div>
             </div>
         </section>
@@ -249,7 +278,14 @@
     
     <div id="modalFleetUnit" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-green-800">Nueva Unidad</h3><input type="text" id="fleetUnit" class="w-full border p-2 mb-2 rounded" placeholder="No. Unidad"><input type="text" id="fleetModel" class="w-full border p-2 mb-2 rounded" placeholder="Modelo"><input type="date" id="fleetDate" class="w-full border p-2 mb-4 rounded"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveFleetUnit()" class="bg-green-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
     
-    <div id="modalAforos" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-orange-800">Registrar Aforo</h3><label class="block text-xs font-bold">Fecha</label><input type="date" id="aforoDateInput" class="w-full border p-2 mb-2 rounded bg-orange-50"><label class="block text-xs font-bold">Ruta</label><select id="aforoRuta" class="w-full border p-2 mb-2 rounded text-sm"><option value="">Seleccione...</option><option value="EL PEÑUELO">EL PEÑUELO</option><option value="EL SALITRE">EL SALITRE</option><option value="LA HEDIONDA">LA HEDIONDA</option><option value="LA SAUCEDA">LA SAUCEDA</option><option value="LOMA LINDA - URDIÑOLA">LOMA LINDA - URDIÑOLA</option><option value="LOS HOYOS - MACUYU">LOS HOYOS - MACUYU</option><option value="OTILIO">OTILIO</option><option value="PARRAS CASETA">PARRAS CASETA</option><option value="PARRAS LIBRE">PARRAS LIBRE</option><option value="PORVENIR - GENERAL CEPEDA">PORVENIR - GENERAL CEPEDA</option><option value="PUERTO MEXICO">PUERTO MEXICO</option><option value="ROMA">ROMA</option><option value="SALTILLO 2000">SALTILLO 2000</option><option value="SAN FRANCISCO">SAN FRANCISCO</option><option value="SAN MIGUEL">SAN MIGUEL</option><option value="SANTA MARIA - SAN RAFAEL">SANTA MARIA - SAN RAFAEL</option><option value="TANQUE DEL CERRO - LA VENTURA">TANQUE DEL CERRO - LA VENTURA</option><option value="TANQUE NUEVO">TANQUE NUEVO</option><option value="TERESITAS">TERESITAS</option><option value="VALENCIA">VALENCIA</option><option value="ZARAGOZA">ZARAGOZA</option></select><label class="block text-xs font-bold">Turno</label><select id="aforoTurno" class="w-full border p-2 mb-2 rounded"><option value="T1">Turno 1</option><option value="T2">Turno 2</option><option value="T3">Turno 3</option></select><label class="block text-xs font-bold">Cantidad</label><input type="number" id="aforoCant" class="w-full border p-2 mb-4 rounded"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveAforos()" class="bg-orange-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
+    <div id="modalAforos" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white p-6 rounded shadow-lg w-96"><h3 class="font-bold text-xl mb-4 text-orange-800">Registrar Aforo</h3><label class="block text-xs font-bold">Fecha</label><input type="date" id="aforoDateInput" class="w-full border p-2 mb-2 rounded bg-orange-50"><label class="block text-xs font-bold">Ruta</label><select id="aforoRuta" class="w-full border p-2 mb-2 rounded text-sm"><option value="">Seleccione...</option><option value="EL PEÑUELO">EL PEÑUELO</option><option value="EL SALITRE">EL SALITRE</option><option value="LA HEDIONDA">LA HEDIONDA</option><option value="LA SAUCEDA">LA SAUCEDA</option><option value="LOMA LINDA - URDIÑOLA">LOMA LINDA - URDIÑOLA</option><option value="LOS HOYOS - MACUYU">LOS HOYOS - MACUYU</option><option value="OTILIO">OTILIO</option><option value="PARRAS CASETA">PARRAS CASETA</option><option value="PARRAS LIBRE">PARRAS LIBRE</option><option value="PORVENIR - GENERAL CEPEDA">PORVENIR - GENERAL CEPEDA</option><option value="PUERTO MEXICO">PUERTO MEXICO</option><option value="ROMA">ROMA</option><option value="SALTILLO 2000">SALTILLO 2000</option><option value="SAN FRANCISCO">SAN FRANCISCO</option><option value="SAN MIGUEL">SAN MIGUEL</option><option value="SANTA MARIA - SAN RAFAEL">SANTA MARIA - SAN RAFAEL</option><option value="TANQUE DEL CERRO - LA VENTURA">TANQUE DEL CERRO - LA VENTURA</option><option value="TANQUE NUEVO">TANQUE NUEVO</option><option value="TERESITAS">TERESITAS</option><option value="VALENCIA">VALENCIA</option><option value="ZARAGOZA">ZARAGOZA</option></select><label class="block text-xs font-bold">Turno</label>
+        <select id="aforoTurno" class="w-full border p-2 mb-2 rounded">
+            <option value="T1">Turno 1</option>
+            <option value="T2">Turno 2</option>
+            <option value="T3">Turno 3</option>
+            <option value="SEC">Secuenciados</option>
+        </select>
+        <label class="block text-xs font-bold">Cantidad</label><input type="number" id="aforoCant" class="w-full border p-2 mb-4 rounded"><div class="flex justify-end gap-2"><button onclick="closeModals()" class="text-gray-500">Cancelar</button><button onclick="saveAforos()" class="bg-orange-600 text-white px-4 py-2 rounded">Guardar</button></div></div></div>
 
     <script type="importmap">{"imports": {"firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
 
@@ -276,6 +312,7 @@
         document.getElementById('filterAforoDate').value = today;
         document.getElementById('aforoDateInput').value = today;
         document.getElementById('incDate').value = today;
+        document.getElementById('compDate').value = today;
         document.getElementById('fleetDateLog').value = today;
 
         const weekSelect = document.getElementById('weekSelector');
@@ -288,7 +325,7 @@
             else if (source === 'week' && w.value !== "all") m.value = ""; 
             fetchAllData();
             fetchIncidents();
-            // Ejecutar filtro de tabla de flota en cambio global
+            fetchComplaints(); 
             if (window.applyFleetFilters) window.applyFleetFilters();
         }
 
@@ -388,7 +425,7 @@
 
         let globalFleetAvg = 100;
         window.currentAforosData = []; 
-        window.allFleetUnits = []; // Guardar unidades globalmente para filtrado en caliente
+        window.allFleetUnits = []; 
 
         async function fetchAllData() {
             showLoading();
@@ -491,7 +528,6 @@
             hideLoading();
         }
 
-        // LÓGICA DE NOTAS SEMANALES DE FLOTA
         window.fetchFleetNote = async function(monthFilter, weekFilter) {
             const noteEl = document.getElementById('fleetNoteText');
             const labelEl = document.getElementById('fleetNoteWeekLabel');
@@ -508,7 +544,6 @@
                     const snap = await getDocs(q);
                     if (!snap.empty) {
                         let notes = snap.docs.map(d => d.data());
-                        // Ordenar descendente para obtener la última semana del mes seleccionado
                         notes.sort((a, b) => parseInt(b.week.replace('W','')) - parseInt(a.week.replace('W','')));
                         noteEl.value = notes[0].text || '';
                         labelEl.innerText = notes[0].week;
@@ -528,7 +563,6 @@
             let selectedWeek = document.getElementById('weekSelector').value;
             let selectedMonth = document.getElementById('monthSelector').value;
             
-            // Si no hay filtro usar datos actuales
             if (!selectedWeek || selectedWeek === 'all') selectedWeek = window.getWeekNumber(new Date().toISOString().split('T')[0]);
             if (!selectedMonth) selectedMonth = new Date().toISOString().substring(5,7);
 
@@ -536,11 +570,8 @@
             const q = query(collection(db, "fleet_notes"), where("week", "==", selectedWeek));
             const snap = await getDocs(q);
             
-            if (!snap.empty) {
-                await updateDoc(doc(db, "fleet_notes", snap.docs[0].id), { text, month: selectedMonth, timestamp: new Date() });
-            } else {
-                await addDoc(collection(db, "fleet_notes"), { week: selectedWeek, month: selectedMonth, text, timestamp: new Date() });
-            }
+            if (!snap.empty) { await updateDoc(doc(db, "fleet_notes", snap.docs[0].id), { text, month: selectedMonth, timestamp: new Date() }); } 
+            else { await addDoc(collection(db, "fleet_notes"), { week: selectedWeek, month: selectedMonth, text, timestamp: new Date() }); }
             
             document.getElementById('fleetNoteWeekLabel').innerText = selectedWeek;
             hideLoading();
@@ -577,9 +608,10 @@
 
         window.saveGeneral = async function() { 
             showLoading();
-            await addDoc(collection(db, "general_logs"), { 
-                week: val('genWeek'), date: val('genDate'), onTime: num('genOnTime'), quality: num('genQuality'), service: num('genService'), iniciosATiempo: num('genIniciosATiempo'), timestamp: new Date() 
-            }); 
+            const id = val('genId');
+            const payload = { week: val('genWeek'), date: val('genDate'), onTime: num('genOnTime'), quality: num('genQuality'), service: num('genService'), iniciosATiempo: num('genIniciosATiempo'), timestamp: new Date() };
+            if(id) { await updateDoc(doc(db, "general_logs", id), payload); } 
+            else { await addDoc(collection(db, "general_logs"), payload); }
             closeModals(); fetchAllData(); 
         }
         
@@ -601,9 +633,10 @@
 
         window.saveOperators = async function() { 
             showLoading();
-            await addDoc(collection(db, "operator_logs"), { 
-                week: val('opsWeek'), date: val('opsDate'), titulares: num('opsTitulares'), postureros: num('opsPostureros'), alcoholNeg: num('opsAlcoholNeg'), dopingNeg: num('opsDopingNeg'), image: num('opsImage'), timestamp: new Date() 
-            }); 
+            const id = val('opsId');
+            const payload = { week: val('opsWeek'), date: val('opsDate'), titulares: num('opsTitulares'), postureros: num('opsPostureros'), alcoholNeg: num('opsAlcoholNeg'), dopingNeg: num('opsDopingNeg'), image: num('opsImage'), timestamp: new Date() };
+            if(id) { await updateDoc(doc(db, "operator_logs", id), payload); } 
+            else { await addDoc(collection(db, "operator_logs"), payload); }
             closeModals(); fetchAllData(); 
         }
         
@@ -645,8 +678,7 @@
                 list.innerHTML += `<li class="p-2 rounded shadow border-l-4 ${statusColor} text-sm flex justify-between items-start group"><div class="flex-1"><span class="font-bold text-gray-500 text-xs">${data.date}</span> <span class="font-bold">${data.operator}</span>: ${data.description} ${actionTxt}</div><div class="flex flex-col items-end"><span class="text-[10px] font-bold uppercase mb-1">${data.status}</span><button onclick="editIncident('${data.id}', '${data.date}', '${data.operator}', '${data.description}', '${data.action||''}', '${data.status}')" class="text-blue-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-edit"></i></button></div></li>`; 
             });
 
-            charts.incidentsStatus.data.datasets[0].data = [openC, closedC];
-            charts.incidentsStatus.update();
+            charts.incidentsStatus.data.datasets[0].data = [openC, closedC]; charts.incidentsStatus.update();
         }
 
         window.editIncident = function(id, date, op, desc, act, status) {
@@ -656,6 +688,75 @@
         window.cancelIncEdit = function() {
             document.getElementById('incId').value = ''; document.getElementById('incOp').value = ''; document.getElementById('incDesc').value = ''; document.getElementById('incAction').value = '';
             document.getElementById('btnSaveInc').innerText = "Agregar"; document.getElementById('btnSaveInc').classList.replace('bg-blue-600', 'bg-red-500'); document.getElementById('btnCancelInc').classList.add('hidden');
+        }
+
+        window.saveComplaint = async function() { 
+            const date = val('compDate'); const type = val('compType'); const desc = val('compDesc'); const action = val('compAction'); const status = val('compStatus'); const id = val('compId');
+            if(!date || !type || !desc) return alert("Complete campos requeridos"); 
+            showLoading();
+            if(id) { await updateDoc(doc(db, "complaints"), { date, type, description: desc, action, status, timestamp: new Date() }); } 
+            else { await addDoc(collection(db, "complaints"), { date, type, description: desc, action, status, timestamp: new Date() }); }
+            cancelCompEdit(); fetchComplaints(); hideLoading();
+        }
+
+        window.fetchComplaints = async function() {
+            const selectedMonth = document.getElementById('monthSelector').value;
+            const selectedWeek = document.getElementById('weekSelector').value;
+            
+            const q = query(collection(db, "complaints"), orderBy("date", "desc"));
+            const snap = await getDocs(q);
+            let complaints = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            
+            complaints = complaints.filter(item => {
+                if(!item.date) return false;
+                if (selectedMonth) return item.date.substring(5, 7) === selectedMonth;
+                if (selectedWeek !== 'all') return window.getWeekNumber(item.date) === selectedWeek;
+                return true;
+            });
+
+            const list = document.getElementById('complaintList'); list.innerHTML = '';
+            let openC = 0, closedC = 0;
+
+            complaints.forEach(data => { 
+                if(data.status === 'Cerrado') closedC++; else openC++;
+                const statusColor = data.status === 'Cerrado' ? 'bg-green-100 border-green-500' : 'bg-orange-50 border-orange-500';
+                const actionTxt = data.action ? `<span class="italic text-gray-600 block text-[11px] mt-1">Acción: ${data.action}</span>` : '';
+                list.innerHTML += `<li class="p-2 rounded shadow border-l-4 ${statusColor} text-sm flex justify-between items-start group"><div class="flex-1"><span class="font-bold text-gray-500 text-xs">${data.date}</span> <span class="font-bold text-orange-700">${data.type}</span>: ${data.description} ${actionTxt}</div><div class="flex flex-col items-end"><span class="text-[10px] font-bold uppercase mb-1">${data.status}</span><button onclick="editComplaint('${data.id}', '${data.date}', '${data.type}', '${data.description}', '${data.action||''}', '${data.status}')" class="text-blue-500 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-edit"></i></button></div></li>`; 
+            });
+
+            charts.complaintsStatus.data.datasets[0].data = [openC, closedC]; charts.complaintsStatus.update();
+        }
+
+        window.editComplaint = function(id, date, type, desc, act, status) {
+            document.getElementById('compId').value = id; document.getElementById('compDate').value = date; document.getElementById('compType').value = type; document.getElementById('compDesc').value = desc; document.getElementById('compAction').value = act; document.getElementById('compStatus').value = status;
+            document.getElementById('btnSaveComp').innerText = "Actualizar"; document.getElementById('btnSaveComp').classList.replace('bg-orange-500', 'bg-blue-600'); document.getElementById('btnCancelComp').classList.remove('hidden');
+        }
+        window.cancelCompEdit = function() {
+            document.getElementById('compId').value = ''; document.getElementById('compType').value = ''; document.getElementById('compDesc').value = ''; document.getElementById('compAction').value = '';
+            document.getElementById('btnSaveComp').innerText = "Agregar"; document.getElementById('btnSaveComp').classList.replace('bg-blue-600', 'bg-orange-500'); document.getElementById('btnCancelComp').classList.add('hidden');
+        }
+
+
+        window.editHistoryItem = function(coll, id) {
+            const item = window.tempHistoryData.find(d => d.id === id);
+            if(!item) return;
+            closeModals(); 
+            
+            if (coll === 'general_logs') {
+                document.getElementById('genId').value = id; document.getElementById('genDate').value = item.date; document.getElementById('genWeek').value = item.week || window.getWeekNumber(item.date);
+                document.getElementById('genOnTime').value = item.onTime || ''; document.getElementById('genQuality').value = item.quality || ''; document.getElementById('genService').value = item.service || ''; document.getElementById('genIniciosATiempo').value = item.iniciosATiempo || '';
+                document.getElementById('modalGeneral').classList.remove('hidden');
+            } 
+            else if (coll === 'security_logs') {
+                document.getElementById('secIdKPI').value = id; document.getElementById('secDateKPI').value = item.date; document.getElementById('secWeekKPI').value = item.week || window.getWeekNumber(item.date);
+                document.getElementById('secScore').value = item.score || ''; document.getElementById('secIncidents').value = item.incidents || ''; document.getElementById('secWork').value = item.work || ''; document.getElementById('secRest').value = item.rest || '';
+                document.getElementById('modalSecurityKPI').classList.remove('hidden');
+            }
+            else if (coll === 'operator_logs') {
+                document.getElementById('opsId').value = id; document.getElementById('opsDate').value = item.date; document.getElementById('opsWeek').value = item.week || window.getWeekNumber(item.date);
+                document.getElementById('opsTitulares').value = item.titulares || ''; document.getElementById('opsPostureros').value = item.postureros || ''; document.getElementById('opsAlcoholNeg').value = item.alcoholNeg || ''; document.getElementById('opsDopingNeg').value = item.dopingNeg || ''; document.getElementById('opsImage').value = item.image || '';
+                document.getElementById('modalOperators').classList.remove('hidden');
+            }
         }
 
         window.openHistory = async function(collectionName) {
@@ -680,11 +781,15 @@
                 let row = '<tr>';
                 if(collectionName === 'general_logs') row += `<td>${item.date}</td><td>${item.week}</td><td class="font-bold text-blue-600">${Number(item.onTime||0).toFixed(1)}%</td><td>${Number(item.quality).toFixed(1)}%</td><td>${Number(item.service).toFixed(1)}%</td><td>${Number(item.iniciosATiempo||0).toFixed(1)}%</td>`;
                 else if(collectionName === 'security_logs') {
-                    let info = ""; if(item.score) info += `Score: ${item.score}% `; if(item.imputable) info += `Imp: ${item.imputable} `;
+                    let info = ""; if(item.score) info += `Score: ${item.score}% `; if(item.imputable !== undefined) info += `Imp: ${item.imputable} `;
                     row += `<td>${item.date}</td><td>${item.week}</td><td>${item.score || '-'}%</td><td>${info}</td>`;
                 }
                 else if(collectionName === 'operator_logs') row += `<td>${item.date}</td><td>${item.week}</td><td>${item.titulares||0}/${item.postureros||0}</td><td>${item.alcoholNeg}%</td><td>${item.dopingNeg}%</td><td>${Number(item.image).toFixed(1)}%</td>`;
-                row += `<td class="flex gap-2"><button onclick="deleteEntry('${collectionName}', '${item.id}')" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button></td></tr>`;
+                
+                row += `<td class="flex gap-3">
+                            <button onclick="editHistoryItem('${collectionName}', '${item.id}')" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteEntry('${collectionName}', '${item.id}')" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                        </td></tr>`;
                 tbody.innerHTML += row;
             });
             document.getElementById('modalHistory').classList.remove('hidden'); hideLoading();
@@ -700,7 +805,6 @@
             } catch(e) {} 
         }
 
-        // NUEVO: Función para aplicar ambos filtros en cascada
         window.applyFleetFilters = function() {
             const selectedMonth = document.getElementById('monthSelector').value;
             const selectedWeek = document.getElementById('weekSelector').value;
@@ -710,10 +814,8 @@
                 const diff = Math.ceil((new Date(u.next)-new Date())/(1000*60*60*24));
                 const status = diff < 7 ? 'realizado' : 'ok';
                 
-                // 1. Filtro local
                 if (localFilter !== 'all' && status !== localFilter) return false;
 
-                // 2. Filtro global (solo aplica si es "Realizado")
                 if (status === 'realizado') {
                     if (selectedMonth && u.next) {
                         if (u.next.substring(5, 7) !== selectedMonth) return false;
@@ -761,7 +863,7 @@
         window.closeModals = function() { document.querySelectorAll('[id^="modal"]').forEach(el => el.classList.add('hidden')); }
         
         document.getElementById('filterAforoDate').addEventListener('change', () => fetchAforosData(document.getElementById('monthSelector').value, document.getElementById('weekSelector').value));
-        Chart.register(ChartDataLabels); initCharts(); fetchFleetUnits(); fetchAllData(); fetchIncidents();
+        Chart.register(ChartDataLabels); initCharts(); fetchFleetUnits(); fetchAllData(); fetchIncidents(); fetchComplaints();
 
     </script>
 
@@ -769,7 +871,16 @@
         function formatDateLabel(dateStr) { if(!dateStr || !dateStr.includes('-')) return dateStr; const parts = dateStr.split('-'); return `${parts[2]}/${parts[1]}`; }
         function getChartLabels(data) { return data.map(d => document.getElementById('monthSelector').value ? d.week : formatDateLabel(d.date)); }
         function navigate(viewId) { document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden')); document.getElementById(viewId).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active', 'bg-blue-900')); const btnId = 'btn-' + viewId.replace('view-', ''); if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('nav-active'); }
-        function openModal(id) { if(id !== 'modalHistory') { const inputs = document.getElementById(id).querySelectorAll('input:not([type="hidden"])'); inputs.forEach(i => i.value = ''); const hiddenId = document.getElementById(id).querySelector('input[type="hidden"]'); if(hiddenId) hiddenId.value = ''; } document.getElementById(id).classList.remove('hidden'); }
+        
+        function openModal(id) { 
+            if(id !== 'modalHistory') { 
+                const inputs = document.getElementById(id).querySelectorAll('input:not([type="hidden"])'); 
+                inputs.forEach(i => i.value = ''); 
+                const hiddenId = document.getElementById(id).querySelector('input[type="hidden"]'); 
+                if(hiddenId) hiddenId.value = ''; 
+            } 
+            document.getElementById(id).classList.remove('hidden'); 
+        }
 
         let charts = {};
         const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { color: '#444', anchor: 'end', align: 'top', font: { weight: 'bold', size: 10 }, formatter: (v) => v === 0 ? '' : v } } };
@@ -802,6 +913,7 @@
             charts.aforoT1 = new Chart(document.getElementById('chartAforoT1'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#f97316' }] }, options: commonOptions });
             charts.aforoT2 = new Chart(document.getElementById('chartAforoT2'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#ea580c' }] }, options: commonOptions });
             charts.aforoT3 = new Chart(document.getElementById('chartAforoT3'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#c2410c' }] }, options: commonOptions });
+            charts.aforoSEC = new Chart(document.getElementById('chartAforoSEC'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Pax', data: [], backgroundColor: '#9333ea' }] }, options: commonOptions });
             charts.aforoAvg = new Chart(document.getElementById('chartAforoAvg'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Promedio', data: [], backgroundColor: '#2563eb' }] }, options: commonOptions });
             charts.aforoGlobalRoute = new Chart(document.getElementById('chartAforoGlobalRoute'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Promedio Pax', data: [], backgroundColor: '#7c3aed' }] }, options: commonOptions });
 
@@ -811,6 +923,7 @@
             charts.opsDoping = new Chart(document.getElementById('chartOpsDoping'), { type: 'bar', data: { labels: [], datasets: [{ label: '% Negativos', data: [], backgroundColor: '#14b8a6' }, { label: '% Positivos', data: [], backgroundColor: '#f97316' }] }, options: { ...commonOptions, scales: stacked100 } });
             
             charts.incidentsStatus = new Chart(document.getElementById('chartIncidentsStatus'), { type: 'doughnut', data: { labels: ['Abierto', 'Cerrado'], datasets: [{ data: [0, 0], backgroundColor: ['#ef4444', '#10b981'] }] }, options: pieOpts });
+            charts.complaintsStatus = new Chart(document.getElementById('chartComplaintsStatus'), { type: 'doughnut', data: { labels: ['Abierto', 'Cerrado'], datasets: [{ data: [0, 0], backgroundColor: ['#f97316', '#22c55e'] }] }, options: pieOpts });
         }
 
         function updateGeneralCharts(data) {
@@ -829,6 +942,14 @@
         }
         
         function updateSecurityCharts(data, rawData) {
+            const calcAvgSec = field => data.length ? (data.reduce((sum, d) => sum + Number(d[field]||0), 0) / data.length).toFixed(1) + "%" : "--%";
+            const sumSec = field => data.length ? data.reduce((sum, d) => sum + Number(d[field]||0), 0) : "--";
+            
+            document.getElementById('avgSecScore').innerText = calcAvgSec('score');
+            document.getElementById('avgSecIncidents').innerText = calcAvgSec('incidents');
+            document.getElementById('totSecImp').innerText = sumSec('imputable');
+            document.getElementById('totSecNoImp').innerText = sumSec('no_imputable');
+
             const labels = getChartLabels(data); const len = labels.length;
             charts.safetyScore.data.labels = labels; charts.safetyScore.data.datasets[0].data = data.map(d => d.score); charts.safetyScore.data.datasets[1].data = createTargetArray(len, 97); charts.safetyScore.update();
             charts.incidentsPct.data.labels = labels; charts.incidentsPct.data.datasets[0].data = data.map(d => d.incidents); charts.incidentsPct.update();
@@ -870,11 +991,12 @@
         function updateAforosDayCharts(data) {
             const rutas = [...new Set(data.map(d => d.ruta))].sort();
             const getDataByTurno = (turno) => rutas.map(r => { const entry = data.find(d => d.ruta === r && d.turno === turno); return entry ? entry.cantidad : 0; });
-            const t1 = getDataByTurno('T1'); const t2 = getDataByTurno('T2'); const t3 = getDataByTurno('T3');
-            const avg = rutas.map((r, i) => Math.round((t1[i]+t2[i]+t3[i])/3));
+            const t1 = getDataByTurno('T1'); const t2 = getDataByTurno('T2'); const t3 = getDataByTurno('T3'); const sec = getDataByTurno('SEC');
+            const avg = rutas.map((r, i) => Math.round((t1[i]+t2[i]+t3[i]+sec[i])/4));
             charts.aforoT1.data.labels = rutas; charts.aforoT1.data.datasets[0].data = t1; charts.aforoT1.update();
             charts.aforoT2.data.labels = rutas; charts.aforoT2.data.datasets[0].data = t2; charts.aforoT2.update();
             charts.aforoT3.data.labels = rutas; charts.aforoT3.data.datasets[0].data = t3; charts.aforoT3.update();
+            charts.aforoSEC.data.labels = rutas; charts.aforoSEC.data.datasets[0].data = sec; charts.aforoSEC.update();
             charts.aforoAvg.data.labels = rutas; charts.aforoAvg.data.datasets[0].data = avg; charts.aforoAvg.update();
         }
 

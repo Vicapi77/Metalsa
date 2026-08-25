@@ -863,6 +863,8 @@
         window.closeModals = function() { document.querySelectorAll('[id^="modal"]').forEach(el => el.classList.add('hidden')); }
         
         document.getElementById('filterAforoDate').addEventListener('change', () => fetchAforosData(document.getElementById('monthSelector').value, document.getElementById('weekSelector').value));
+        weekSelect.value = window.getWeekNumber(today);
+
         Chart.register(ChartDataLabels); initCharts(); fetchFleetUnits(); fetchAllData(); fetchIncidents(); fetchComplaints();
 
     </script>
@@ -898,7 +900,7 @@
             
             charts.safetyScore = new Chart(document.getElementById('chartSafetyScore'), { type: 'line', data: { labels: [], datasets: [{ label: 'Score', data: [], borderColor: '#4f46e5', tension: 0.3 }, { label: 'Objetivo', data: [], borderColor: 'gray', borderDash: [5,5], pointRadius: 0, datalabels: {display: false} }] }, options: { ...commonOptions, scales: scale80_110 } });
             charts.incidentsPct = new Chart(document.getElementById('chartIncidentsPct'), { type: 'line', data: { labels: [], datasets: [{ label: '% Percances', data: [], borderColor: '#f59e0b', tension: 0.3 }] }, options: commonOptions });
-            charts.hoursStacked = new Chart(document.getElementById('chartHoursStacked'), { type: 'bar', data: { labels: [], datasets: [{ type: 'line', label: 'Límite', data: [], borderColor: 'red', borderDash: [5,5], pointRadius: 0, datalabels: {display: false} }, { label: 'Trabajadas', backgroundColor: '#6366f1' }, { label: 'Descansadas', backgroundColor: '#10b981' }] }, options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
+            charts.hoursStacked = new Chart(document.getElementById('chartHoursStacked'), { type: 'bar', data: { labels: [], datasets: [{ type: 'line', label: 'Límite', data: [], borderColor: 'red', borderDash: [5,5], pointRadius: 0, datalabels: {display: false} }, { label: 'Trabajadas', backgroundColor: '#6366f1' }, { label: 'Disposición Ósea', backgroundColor: '#f59e0b' }, { label: 'Descansadas', backgroundColor: '#10b981' }] }, options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
             charts.incidentsStacked = new Chart(document.getElementById('chartIncidentsStacked'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Imputables', backgroundColor: '#ef4444' }, { label: 'No Imputables', backgroundColor: '#3b82f6' }] }, options: { ...commonOptions, scales: { x: { stacked: true }, y: { stacked: true } } } });
             
             const pieOpts = { plugins: { legend: { position: 'right' }, datalabels: { color: 'white' } } };
@@ -953,7 +955,7 @@
             const labels = getChartLabels(data); const len = labels.length;
             charts.safetyScore.data.labels = labels; charts.safetyScore.data.datasets[0].data = data.map(d => d.score); charts.safetyScore.data.datasets[1].data = createTargetArray(len, 97); charts.safetyScore.update();
             charts.incidentsPct.data.labels = labels; charts.incidentsPct.data.datasets[0].data = data.map(d => d.incidents); charts.incidentsPct.update();
-            charts.hoursStacked.data.labels = labels; charts.hoursStacked.data.datasets[0].data = createTargetArray(len, 8); charts.hoursStacked.data.datasets[1].data = data.map(d => d.work); charts.hoursStacked.data.datasets[2].data = data.map(d => d.rest); charts.hoursStacked.update();
+            charts.hoursStacked.data.labels = labels; charts.hoursStacked.data.datasets[0].data = createTargetArray(len, 8); charts.hoursStacked.data.datasets[1].data = data.map(d => d.work); charts.hoursStacked.data.datasets[2].data = createTargetArray(len, 2); charts.hoursStacked.data.datasets[3].data = data.map(d => d.rest); charts.hoursStacked.update();
             charts.incidentsStacked.data.labels = labels; charts.incidentsStacked.data.datasets[0].data = data.map(d => d.imputable || 0); charts.incidentsStacked.data.datasets[1].data = data.map(d => d.no_imputable || 0); charts.incidentsStacked.update();
 
             const countReasons = (field) => { const counts = {}; rawData.forEach(item => { const r = item[field]; if(r) { counts[r] = (counts[r] || 0) + 1; } }); return counts; }
